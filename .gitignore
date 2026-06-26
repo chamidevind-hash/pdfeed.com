@@ -1,0 +1,10 @@
+node_modules/
+frontend/.next/
+frontend/.env.local
+backend/.env
+backend/uploads/*
+backend/converted/*
+!backend/uploads/.gitkeep
+!backend/converted/.gitkeep
+npm-debug.log*
+.DS_Store

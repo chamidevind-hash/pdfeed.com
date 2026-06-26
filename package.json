@@ -1,0 +1,27 @@
+{
+  "name": "file-convert-web",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "concurrently -n frontend,backend -c blue,green \"npm run dev --workspace frontend\" \"npm run dev --workspace backend\"",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "dev:backend": "npm run dev --workspace backend",
+    "build": "npm run build --workspace frontend",
+    "start:frontend": "npm run start --workspace frontend",
+    "start:backend": "npm run start --workspace backend",
+    "check": "npm run check --workspace backend && npm run build --workspace frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  },
+  "overrides": {
+    "next@16.2.9": {
+      "postcss": "8.5.15"
+    },
+    "shell-quote": "^1.8.4"
+  }
+}
