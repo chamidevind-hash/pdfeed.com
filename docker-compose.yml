@@ -1,0 +1,137 @@
+name: file-convert-web
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_SITE_URL: https://convert.getqrly.com
+    restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+    expose:
+      - "3000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - app_network
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      FRONTEND_URL: https://convert.getqrly.com
+      FILE_TTL_MS: 3600000
+      CLEANUP_INTERVAL_MS: 3600000
+      DAILY_CONVERSION_LIMIT: 10
+      CONVERSION_LIMIT_WINDOW_MS: 86400000
+      LIBREOFFICE_PATH: libreoffice
+      PDFTOPPM_PATH: pdftoppm
+      GHOSTSCRIPT_PATH: gs
+      PDF_TO_WORD_PROVIDER: ${PDF_TO_WORD_PROVIDER:-auto}
+      PYTHON_PATH: python3
+      CONVERTAPI_TOKEN: ${CONVERTAPI_TOKEN:-}
+      CONVERTAPI_BASE_URL: https://v2.convertapi.com/convert/pdf/to/docx
+    expose:
+      - "4000"
+    volumes:
+      - uploads_data:/app/backend/uploads
+      - converted_data:/app/backend/converted
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - app_network
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      DOMAIN: convert.getqrly.com
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - letsencrypt_data:/etc/letsencrypt:ro
+      - certbot_webroot:/var/www/certbot:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O - --header='Host: convert.getqrly.com' http://127.0.0.1/nginx-health | grep -q ok"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - app_network
+
+  certbot:
+    image: certbot/certbot:latest
+    profiles:
+      - ssl
+    volumes:
+      - letsencrypt_data:/etc/letsencrypt
+      - certbot_webroot:/var/www/certbot
+    command:
+      - certonly
+      - --webroot
+      - --webroot-path=/var/www/certbot
+      - --email
+      - ${LETSENCRYPT_EMAIL:-admin@getqrly.com}
+      - --agree-tos
+      - --no-eff-email
+      - --domain
+      - convert.getqrly.com
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  uploads_data:
+  converted_data:
+  letsencrypt_data:
+  certbot_webroot:
