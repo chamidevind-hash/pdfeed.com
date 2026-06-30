@@ -1,4 +1,4 @@
-# File Convert Web
+# PDFeed
 
 A full MVP file conversion website built with Next.js and Express. It includes a
 modern responsive interface, SEO-focused tool pages, temporary randomized file
@@ -222,7 +222,7 @@ The included Compose stack deploys:
 - Certbot volumes and an ACME webroot for Let's Encrypt
 - Persistent temporary upload and conversion volumes
 
-The production hostname is `convert.getqrly.com`. Point its DNS `A`/`AAAA`
+The production hostname is `pdfeed.com`. Point its DNS `A`/`AAAA`
 records to the Docker host before requesting a certificate.
 
 ### Start the HTTP stack
@@ -253,7 +253,7 @@ docker compose restart nginx
 ```
 
 On restart, the Nginx entrypoint detects the certificate under
-`/etc/letsencrypt/live/convert.getqrly.com/` and automatically enables:
+`/etc/letsencrypt/live/pdfeed.com/` and automatically enables:
 
 - HTTPS on port 443
 - HTTP-to-HTTPS redirects
@@ -282,5 +282,3 @@ docker compose down
 
 Do not use `docker compose down -v` in production unless you intentionally want
 to delete certificates and temporary-file volumes.
-#   p d f e e d . c o m  
- 

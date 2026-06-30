@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ToolPage } from "@/components/ToolPage";
+import { createPageMetadata } from "@/lib/site";
 import { toolMap, tools, type ToolSlug } from "@/lib/tools";
 
 type PageProps = {
@@ -18,16 +19,11 @@ export async function generateMetadata({
   const tool = toolMap[slug as ToolSlug];
   if (!tool) return {};
 
-  return {
+  return createPageMetadata({
     title: tool.title,
     description: tool.seoDescription,
-    alternates: { canonical: `/${tool.slug}` },
-    openGraph: {
-      title: tool.title,
-      description: tool.seoDescription,
-      url: `/${tool.slug}`,
-    },
-  };
+    path: `/${tool.slug}`,
+  });
 }
 
 export default async function ConverterPage({ params }: PageProps) {

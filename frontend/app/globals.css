@@ -1111,6 +1111,13 @@ main {
   line-height: 1.8;
 }
 
+.legal-container p a {
+  color: var(--blue);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .site-footer {
   color: #cbd5e1;
   background: #0f172a;

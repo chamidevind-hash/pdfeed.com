@@ -11,6 +11,16 @@ import { BetaBanner } from "@/components/BetaBanner";
 import { GetQrlyBanner } from "@/components/GetQrlyBanner";
 import { ToolCard } from "@/components/ToolCard";
 import { tools } from "@/lib/tools";
+import { SITE_DESCRIPTION, createPageMetadata } from "@/lib/site";
+
+export const metadata: Metadata = {
+  ...createPageMetadata({
+    title: "PDFeed – Free Online File Converter",
+    description: SITE_DESCRIPTION,
+    path: "/",
+  }),
+  title: { absolute: "PDFeed – Free Online File Converter" },
+};
 
 const trustItems = [
   { icon: Zap, title: "Fast", text: "Quick online conversions" },
@@ -200,3 +210,4 @@ export default function HomePage() {
     </main>
   );
 }
+import type { Metadata } from "next";

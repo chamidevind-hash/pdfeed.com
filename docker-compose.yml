@@ -1,4 +1,4 @@
-name: file-convert-web
+name: pdfeed
 
 services:
   frontend:
@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
       args:
-        NEXT_PUBLIC_SITE_URL: https://convert.getqrly.com
+        NEXT_PUBLIC_SITE_URL: https://pdfeed.com
     restart: unless-stopped
     init: true
     security_opt:
@@ -43,7 +43,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 4000
-      FRONTEND_URL: https://convert.getqrly.com
+      FRONTEND_URL: https://pdfeed.com
       FILE_TTL_MS: 3600000
       CLEANUP_INTERVAL_MS: 3600000
       DAILY_CONVERSION_LIMIT: 10
@@ -83,7 +83,7 @@ services:
     security_opt:
       - no-new-privileges:true
     environment:
-      DOMAIN: convert.getqrly.com
+      DOMAIN: pdfeed.com
     depends_on:
       frontend:
         condition: service_healthy
@@ -99,7 +99,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "wget -q -O - --header='Host: convert.getqrly.com' http://127.0.0.1/nginx-health | grep -q ok"
+          "wget -q -O - --header='Host: pdfeed.com' http://127.0.0.1/nginx-health | grep -q ok"
         ]
       interval: 30s
       timeout: 10s
@@ -124,7 +124,7 @@ services:
       - --agree-tos
       - --no-eff-email
       - --domain
-      - convert.getqrly.com
+      - pdfeed.com
 
 networks:
   app_network:

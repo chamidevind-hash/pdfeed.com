@@ -9,5 +9,5 @@ await deleteExpiredFiles();
 startCleanupJob();
 
 app.listen(config.port, () => {
-  console.log(`File Convert Web API running on http://localhost:${config.port}`);
+  console.log(`PDFeed API running on http://localhost:${config.port}`);
 });

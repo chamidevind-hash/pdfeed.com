@@ -2,6 +2,13 @@ import type { Metadata } from "next";
 import { Inter, Manrope } from "next/font/google";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import {
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+  SOCIAL_IMAGE_URL,
+  absoluteUrl,
+} from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -17,15 +24,13 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://fileconvertweb.com",
-  ),
+  metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
   title: {
-    default: "File Convert Web - Free Online File Converter",
-    template: "%s | File Convert Web",
+    default: "PDFeed – Free Online File Converter",
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "Convert PDF, Word, Excel and image files online for free. Fast, secure and no registration required.",
+  description: SITE_DESCRIPTION,
   keywords: [
     "file converter",
     "PDF converter",
@@ -36,13 +41,40 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: "website",
-    siteName: "File Convert Web",
-    title: "File Convert Web - Free Online File Converter",
-    description:
-      "Convert PDF, Word, Excel and images online. Fast, secure and free.",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: "PDFeed – Free Online File Converter",
+    description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: SOCIAL_IMAGE_URL,
+        width: 1200,
+        height: 630,
+        alt: "PDFeed online file converter",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
+    title: "PDFeed – Free Online File Converter",
+    description: SITE_DESCRIPTION,
+    images: [SOCIAL_IMAGE_URL],
+  },
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [
+      {
+        url: "/apple-touch-icon.png",
+        type: "image/png",
+        sizes: "180x180",
+      },
+    ],
   },
   verification: {
     google: "ZE_oAp9U5ABlW_Nw1bwfPQscmCrMGSePXeZAubrN77U",
@@ -52,8 +84,37 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        name: SITE_NAME,
+        url: SITE_URL,
+        logo: absoluteUrl("/icon-512.png"),
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        name: SITE_NAME,
+        url: SITE_URL,
+        description: SITE_DESCRIPTION,
+        publisher: { "@id": `${SITE_URL}/#organization` },
+      },
+    ],
+  };
+
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
+          }}
+        />
+      </head>
       <body className={`${inter.variable} ${manrope.variable}`}>
         <div className="site-shell">
           <Header />

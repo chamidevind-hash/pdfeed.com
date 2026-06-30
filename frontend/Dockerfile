@@ -10,7 +10,7 @@ RUN npm ci
 FROM node:22-bookworm-slim AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
-ARG NEXT_PUBLIC_SITE_URL=https://convert.getqrly.com
+ARG NEXT_PUBLIC_SITE_URL=https://pdfeed.com
 ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY package.json package-lock.json ./
@@ -30,6 +30,7 @@ RUN groupadd --system --gid 1001 nextjs \
 
 COPY --from=builder --chown=nextjs:nextjs /app/frontend/.next/standalone ./
 COPY --from=builder --chown=nextjs:nextjs /app/frontend/.next/static ./frontend/.next/static
+COPY --from=builder --chown=nextjs:nextjs /app/frontend/public ./frontend/public
 
 USER nextjs
 EXPOSE 3000

@@ -1,57 +1,92 @@
 import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Terms of Use",
-  description: "Terms for using the File Convert Web online conversion tools.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Terms of Service",
+  description:
+    "Read the terms for using PDFeed's free online file conversion tools.",
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (
     <main className="legal-page">
       <div className="container legal-container">
         <span className="eyebrow">Service guidelines</span>
-        <h1>Terms of Use</h1>
-        <p className="legal-updated">Last updated: June 10, 2026</p>
+        <h1>Terms of Service</h1>
+        <p className="legal-updated">Last updated: June 28, 2026</p>
 
-        <h2>Using the service</h2>
+        <h2>About the service</h2>
         <p>
-          You may use File Convert Web only for lawful file conversion. You must
-          own the files you upload or have permission to process them.
+          PDFeed provides free online file conversion tools. By using PDFeed,
+          you agree to these Terms of Service and to use the website only for
+          lawful purposes.
+        </p>
+
+        <h2>Your files and permissions</h2>
+        <p>
+          You are responsible for every file you upload. You must own the file
+          or have the rights and permission needed to upload, process, and
+          convert it. PDFeed does not review or verify ownership of uploaded
+          content.
         </p>
 
         <h2>Prohibited use</h2>
         <p>
-          Do not upload malicious files, attempt to disrupt the service, bypass
-          file restrictions, or use automated traffic that harms availability
-          for others.
+          You must not upload malware, illegal or abusive content, copyrighted
+          files without permission, or confidential files that you are not
+          authorized to process. You must not attempt to disrupt PDFeed, bypass
+          limits, probe its security, or use automated traffic in a way that
+          harms the service or other users.
         </p>
 
-        <h2>Availability and results</h2>
+        <h2>Conversion results</h2>
         <p>
-          The service is provided on an as-available basis. Conversion results
-          can vary based on document formatting, fonts, source quality, and
-          third-party conversion software.
+          PDFeed is provided “as is” and “as available.” We do not guarantee
+          that every conversion will succeed or that formatting, fonts, images,
+          tables, metadata, or layout will be preserved perfectly.
         </p>
 
-        <h2>Free beta limits</h2>
+        <h2>Temporary file storage</h2>
         <p>
-          During the free beta, usage is limited to 10 successful conversions
-          per IP address during each 24-hour period, with a maximum file size of
-          25MB per upload. Limits may change as premium plans are introduced.
+          Uploaded and converted files are stored temporarily and automatically
+          deleted after one hour. You are responsible for keeping your original
+          files and downloading completed conversions before they expire.
         </p>
 
-        <h2>Temporary downloads</h2>
+        <h2>Disclaimer and limitation of liability</h2>
         <p>
-          Files are intended for immediate download and are automatically
-          deleted after one hour. You are responsible for retaining your
-          original files and downloaded results.
+          To the fullest extent permitted by law, PDFeed is not responsible for
+          data loss, formatting issues, failed or incomplete conversions,
+          service interruptions, unauthorized uploads, or misuse of converted
+          files. You use the service at your own risk.
         </p>
 
-        <h2>Liability</h2>
+        <h2>Future changes</h2>
         <p>
-          To the extent allowed by law, File Convert Web is not liable for data
-          loss, formatting changes, interrupted availability, or indirect
-          damages resulting from use of the service.
+          PDFeed may introduce or change file-size limits, conversion limits,
+          advertisements, paid plans, supported formats, or other features in
+          the future. We may modify, suspend, or discontinue parts of the
+          service at any time.
+        </p>
+
+        <h2>Abuse prevention</h2>
+        <p>
+          PDFeed may limit or block abusive users, automated systems, or
+          suspicious traffic when reasonably necessary to protect the website,
+          its infrastructure, or other users.
+        </p>
+
+        <h2>Changes to these terms</h2>
+        <p>
+          We may update these Terms of Service from time to time. Continued use
+          of PDFeed after an update means you accept the revised terms.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+          Questions about these Terms of Service can be sent to{" "}
+          <a href="mailto:support@pdfeed.com">support@pdfeed.com</a>.
         </p>
       </div>
     </main>

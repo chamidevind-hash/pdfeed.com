@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-DOMAIN="${DOMAIN:-convert.getqrly.com}"
+DOMAIN="${DOMAIN:-pdfeed.com}"
 CERTIFICATE="/etc/letsencrypt/live/${DOMAIN}/fullchain.pem"
 PRIVATE_KEY="/etc/letsencrypt/live/${DOMAIN}/privkey.pem"
 
