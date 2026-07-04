@@ -12,6 +12,8 @@ import { GetQrlyBanner } from "@/components/GetQrlyBanner";
 import { ToolCard } from "@/components/ToolCard";
 import { tools } from "@/lib/tools";
 import { SITE_DESCRIPTION, createPageMetadata } from "@/lib/site";
+import { BlogCard } from "@/components/BlogCard";
+import { blogPosts } from "@/lib/blog-posts";
 
 export const metadata: Metadata = {
   ...createPageMetadata({
@@ -138,6 +140,24 @@ export default function HomePage() {
             {tools.map((tool) => (
               <ToolCard key={tool.slug} tool={tool} />
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="helpful-guides-section">
+        <div className="container">
+          <div className="section-heading centered">
+            <span className="eyebrow">Helpful Guides</span>
+            <h2>Get better results from your files</h2>
+            <p>Practical tips for converting and organizing everyday documents.</p>
+          </div>
+          <div className="blog-grid blog-grid-three">
+            {blogPosts.slice(0, 3).map((post) => (
+              <BlogCard key={post.slug} post={post} />
+            ))}
+          </div>
+          <div className="guides-link-row">
+            <a href="/blog" className="button guides-link-button">View all guides</a>
           </div>
         </div>
       </section>

@@ -43,10 +43,32 @@ for (const size of [16, 32, 48]) {
 }
 
 await Promise.all([
-  renderPng("icon-192.png", 192),
-  renderPng("icon-512.png", 512),
+  renderPng("favicon-16x16.png", 16),
+  renderPng("favicon-32x32.png", 32),
+  renderPng("android-chrome-192x192.png", 192),
+  renderPng("android-chrome-512x512.png", 512),
   renderPng("apple-touch-icon.png", 180),
   fs.writeFile(path.join(publicDir, "favicon.ico"), createIco(icoImages)),
+  fs.writeFile(
+    path.join(publicDir, "site.webmanifest"),
+    JSON.stringify(
+      {
+        name: "PDFeed",
+        short_name: "PDFeed",
+        description: "Free Online File Converter",
+        start_url: "/",
+        display: "standalone",
+        background_color: "#ffffff",
+        theme_color: "#2563EB",
+        icons: [
+          { src: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+          { src: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+        ],
+      },
+      null,
+      2,
+    ),
+  ),
 ]);
 
 console.log("PDFeed favicon assets generated.");

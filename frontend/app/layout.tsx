@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Manrope } from "next/font/google";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
@@ -60,12 +60,12 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: [SOCIAL_IMAGE_URL],
   },
-  manifest: "/manifest.webmanifest",
+  manifest: "/site.webmanifest",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
-      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+      { url: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+      { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
     ],
     shortcut: "/favicon.ico",
     apple: [
@@ -81,6 +81,10 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#2563EB",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -92,7 +96,7 @@ export default function RootLayout({
         "@id": `${SITE_URL}/#organization`,
         name: SITE_NAME,
         url: SITE_URL,
-        logo: absoluteUrl("/icon-512.png"),
+        logo: absoluteUrl("/android-chrome-512x512.png"),
       },
       {
         "@type": "WebSite",

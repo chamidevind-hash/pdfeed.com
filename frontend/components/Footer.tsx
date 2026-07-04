@@ -12,6 +12,7 @@ export function Footer() {
           <p className="footer-premium">Premium plans coming soon.</p>
         </div>
         <div className="footer-links">
+          <Link href="/blog">Blog</Link>
           <Link href="/privacy">Privacy</Link>
           <Link href="/terms">Terms</Link>
         </div>
