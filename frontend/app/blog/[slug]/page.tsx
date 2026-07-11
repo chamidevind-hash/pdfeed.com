@@ -12,6 +12,18 @@ export function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }));
 }
 
+function getCtaTitle(toolLabel: string) {
+  const titles: Record<string, string> = {
+    "Convert Word to PDF": "Convert your Word file to PDF now",
+    "Compress a PDF": "Compress your PDF now",
+    "Merge PDF Files": "Merge your PDF files now",
+    "Convert JPG to PDF": "Convert your JPG to PDF now",
+    "Convert Excel to PDF": "Convert your Excel file to PDF now",
+  };
+
+  return titles[toolLabel] ?? "Convert your file now";
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = blogPostMap[slug];
@@ -76,8 +88,14 @@ export default async function BlogPostPage({ params }: PageProps) {
       />
       <article>
         <header className="article-hero">
-          <div className="narrow-container article-hero-inner">
-            <Link href="/blog" className="article-back">PDFeed Blog</Link>
+          <div className="article-container article-hero-inner">
+            <nav className="article-breadcrumb" aria-label="Breadcrumb">
+              <Link href="/">Home</Link>
+              <span aria-hidden="true">/</span>
+              <Link href="/blog">Blog</Link>
+              <span aria-hidden="true">/</span>
+              <span>{post.title}</span>
+            </nav>
             <h1>{post.title}</h1>
             <p>{post.description}</p>
             <div className="article-meta">
@@ -87,7 +105,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           </div>
         </header>
 
-        <div className="narrow-container article-layout">
+        <div className="article-container article-layout">
           <nav className="article-toc" aria-label="Table of contents">
             <strong>Table of contents</strong>
             <ol>
@@ -130,11 +148,21 @@ export default async function BlogPostPage({ params }: PageProps) {
 
             <section className="article-cta">
               <span>Ready to get started?</span>
-              <h2>Use the free PDFeed tool</h2>
+              <h2>{getCtaTitle(post.toolLabel)}</h2>
               <p>No registration required. Files up to 25MB during the free beta.</p>
               <Link href={post.toolPath} className="button button-primary">
                 {post.toolLabel}<ArrowRight size={18} />
               </Link>
+            </section>
+
+            <section className="article-related">
+              <div className="section-heading">
+                <span className="eyebrow">Keep learning</span>
+                <h2>Related guides</h2>
+              </div>
+              <div className="article-related-grid">
+                {related.map((item) => <BlogCard key={item.slug} post={item} />)}
+              </div>
             </section>
 
             <section id="frequently-asked-questions" className="article-faq">
@@ -151,18 +179,6 @@ export default async function BlogPostPage({ params }: PageProps) {
           </div>
         </div>
       </article>
-
-      <section className="article-related">
-        <div className="container">
-          <div className="section-heading">
-            <span className="eyebrow">Keep learning</span>
-            <h2>Related guides</h2>
-          </div>
-          <div className="blog-grid blog-grid-three">
-            {related.map((item) => <BlogCard key={item.slug} post={item} />)}
-          </div>
-        </div>
-      </section>
     </main>
   );
 }
