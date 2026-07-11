@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL, absoluteUrl } from "@/lib/site";
-import { tools } from "@/lib/tools";
+import { categorySlugs, converters } from "@/lib/converters";
 import { blogPosts } from "@/lib/blog-posts";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -13,11 +13,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 1,
     },
-    ...tools.map((tool) => ({
-      url: absoluteUrl(`/${tool.slug}`),
+    ...converters.map((converter) => ({
+      url: absoluteUrl(`/${converter.slug}`),
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.8,
+    })),
+    ...categorySlugs.map(({ slug }) => ({
+      url: absoluteUrl(`/${slug}`),
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
     })),
     {
       url: absoluteUrl("/blog"),

@@ -1,17 +1,75 @@
 import { Clock3, LockKeyhole, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 import { BetaBanner } from "@/components/BetaBanner";
 import { Converter } from "@/components/Converter";
 import { ToolCard } from "@/components/ToolCard";
-import { toolMap, type Tool } from "@/lib/tools";
+import { SITE_NAME, absoluteUrl } from "@/lib/site";
+import { converterMap, type Converter as ConverterDefinition } from "@/lib/converters";
 
-export function ToolPage({ tool }: { tool: Tool }) {
+export function ToolPage({ tool }: { tool: ConverterDefinition }) {
   const Icon = tool.icon;
+  const pageUrl = absoluteUrl(`/${tool.slug}`);
+  const categoryUrl = absoluteUrl(`/${tool.categorySlug}`);
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        name: tool.title,
+        url: pageUrl,
+        applicationCategory: "UtilitiesApplication",
+        operatingSystem: "Web",
+        description: tool.seoDescription,
+        provider: {
+          "@type": "Organization",
+          name: SITE_NAME,
+          url: absoluteUrl("/"),
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: absoluteUrl("/"),
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: tool.categoryTitle,
+            item: categoryUrl,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: tool.shortTitle,
+            item: pageUrl,
+          },
+        ],
+      },
+    ],
+  };
 
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
+        }}
+      />
       <section className="tool-hero">
         <div className="container narrow-container">
           <BetaBanner />
+          <nav className="tool-breadcrumb" aria-label="Breadcrumb">
+            <Link href="/">Home</Link>
+            <span aria-hidden="true">/</span>
+            <Link href={`/${tool.categorySlug}`}>{tool.categoryTitle}</Link>
+            <span aria-hidden="true">/</span>
+            <span>{tool.shortTitle}</span>
+          </nav>
           <span className={`page-tool-icon accent-${tool.accent}`}>
             <Icon size={30} />
           </span>
@@ -26,6 +84,8 @@ export function ToolPage({ tool }: { tool: Tool }) {
           <Converter
             tool={{
               slug: tool.slug,
+              apiRoute: tool.apiRoute,
+              uploadField: tool.uploadField,
               accept: tool.accept,
               acceptLabel: tool.acceptLabel,
               multiple: tool.multiple,
@@ -73,7 +133,7 @@ export function ToolPage({ tool }: { tool: Tool }) {
           </div>
           <div className="tools-grid related-grid">
             {tool.related.map((slug) => (
-              <ToolCard key={slug} tool={toolMap[slug]} />
+              <ToolCard key={slug} tool={converterMap[slug]} />
             ))}
           </div>
         </div>

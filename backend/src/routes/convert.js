@@ -64,113 +64,115 @@ function singleFileRoute(
   ];
 }
 
-router.post(
-  "/word-to-pdf",
-  ...singleFileRoute(
-    "file",
-    [".doc", ".docx"],
-    convertOfficeToPdf,
-    "-converted.pdf",
-  ),
-);
-
-router.post(
-  "/excel-to-pdf",
-  ...singleFileRoute(
-    "file",
-    [".xls", ".xlsx"],
-    convertOfficeToPdf,
-    "-converted.pdf",
-  ),
-);
-
-router.post(
-  "/pdf-to-jpg",
-  ...singleFileRoute(
-    "file",
-    [".pdf"],
-    pdfToJpg,
-    (name, output) =>
+const singleFileConverters = [
+  {
+    slug: "word-to-pdf",
+    expectedExtensions: [".doc", ".docx"],
+    converter: convertOfficeToPdf,
+    resultName: "-converted.pdf",
+  },
+  {
+    slug: "excel-to-pdf",
+    expectedExtensions: [".xls", ".xlsx"],
+    converter: convertOfficeToPdf,
+    resultName: "-converted.pdf",
+  },
+  {
+    slug: "pdf-to-jpg",
+    expectedExtensions: [".pdf"],
+    converter: pdfToJpg,
+    resultName: (name, output) =>
       `${name}-images${extensionForResult(output) === ".zip" ? ".zip" : ".jpg"}`,
-  ),
-);
+  },
+  {
+    slug: "split-pdf",
+    expectedExtensions: [".pdf"],
+    converter: splitPdf,
+    resultName: "-split-pages.zip",
+  },
+  {
+    slug: "compress-pdf",
+    expectedExtensions: [".pdf"],
+    converter: compressPdf,
+    resultName: "-compressed.pdf",
+  },
+  {
+    slug: "pdf-to-word",
+    expectedExtensions: [".pdf"],
+    converter: convertPdfToDocx,
+    resultName: "-converted.docx",
+  },
+];
 
-router.post(
-  "/split-pdf",
-  ...singleFileRoute("file", [".pdf"], splitPdf, "-split-pages.zip"),
-);
-
-router.post(
-  "/compress-pdf",
-  ...singleFileRoute("file", [".pdf"], compressPdf, "-compressed.pdf"),
-);
-
-router.post(
-  "/jpg-to-pdf",
-  conversionLimit,
-  upload.array("files", 20),
-  asyncHandler(async (req, res) => {
+function multiFileRoute({
+  expectedExtensions,
+  minimumFiles,
+  requiredMessage,
+  requiredCode,
+  converter,
+  outputName,
+}) {
+  return [
+    conversionLimit,
+    upload.array("files", 20),
+    asyncHandler(async (req, res) => {
     const files = req.files || [];
-    if (files.length === 0) {
-      throw new AppError(
-        "Please select at least one image.",
-        400,
-        "FILE_REQUIRED",
-      );
+    if (files.length < minimumFiles) {
+      throw new AppError(requiredMessage, 400, requiredCode);
     }
 
     try {
       files.forEach((file) =>
-        assertExtension(file, [".jpg", ".jpeg", ".png"]),
+        assertExtension(file, expectedExtensions),
       );
-      const output = await imagesToPdf(files.map((file) => file.path));
+      const output = await converter(files.map((file) => file.path));
       const quota = commitConversion(req, res);
       res.json({
-        ...downloadPayload(output, "images-converted.pdf"),
+        ...downloadPayload(output, outputName),
         quota,
       });
     } finally {
       await removeFiles(files.map((file) => file.path));
     }
-  }),
-);
+    }),
+  ];
+}
 
-router.post(
-  "/merge-pdf",
-  conversionLimit,
-  upload.array("files", 20),
-  asyncHandler(async (req, res) => {
-    const files = req.files || [];
-    if (files.length < 2) {
-      throw new AppError(
-        "Please select at least two PDF files.",
-        400,
-        "MULTIPLE_FILES_REQUIRED",
-      );
-    }
+const multiFileConverters = [
+  {
+    slug: "jpg-to-pdf",
+    expectedExtensions: [".jpg", ".jpeg", ".png"],
+    minimumFiles: 1,
+    requiredMessage: "Please select at least one image.",
+    requiredCode: "FILE_REQUIRED",
+    converter: imagesToPdf,
+    outputName: "images-converted.pdf",
+  },
+  {
+    slug: "merge-pdf",
+    expectedExtensions: [".pdf"],
+    minimumFiles: 2,
+    requiredMessage: "Please select at least two PDF files.",
+    requiredCode: "MULTIPLE_FILES_REQUIRED",
+    converter: mergePdfs,
+    outputName: "merged-document.pdf",
+  },
+];
 
-    try {
-      files.forEach((file) => assertExtension(file, [".pdf"]));
-      const output = await mergePdfs(files.map((file) => file.path));
-      const quota = commitConversion(req, res);
-      res.json({
-        ...downloadPayload(output, "merged-document.pdf"),
-        quota,
-      });
-    } finally {
-      await removeFiles(files.map((file) => file.path));
-    }
-  }),
-);
+for (const converter of singleFileConverters) {
+  router.post(
+    `/${converter.slug}`,
+    ...singleFileRoute(
+      "file",
+      converter.expectedExtensions,
+      converter.converter,
+      converter.resultName,
+    ),
+  );
+}
 
-router.post(
-  "/pdf-to-word",
-  ...singleFileRoute(
-    "file",
-    [".pdf"],
-    convertPdfToDocx,
-    "-converted.docx",
-  ),
-);
+for (const converter of multiFileConverters) {
+  router.post(`/${converter.slug}`, ...multiFileRoute(converter));
+}
 
 export default router;

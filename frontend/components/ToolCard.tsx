@@ -1,8 +1,8 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import type { Tool } from "@/lib/tools";
+import type { Converter } from "@/lib/converters";
 
-export function ToolCard({ tool }: { tool: Tool }) {
+export function ToolCard({ tool }: { tool: Converter }) {
   const Icon = tool.icon;
   return (
     <Link href={`/${tool.slug}`} className="tool-card">

@@ -10,7 +10,7 @@ import {
 import { BetaBanner } from "@/components/BetaBanner";
 import { GetQrlyBanner } from "@/components/GetQrlyBanner";
 import { ToolCard } from "@/components/ToolCard";
-import { tools } from "@/lib/tools";
+import { categoriesWithConverters, popularConverters } from "@/lib/converters";
 import { SITE_DESCRIPTION, createPageMetadata } from "@/lib/site";
 import { BlogCard } from "@/components/BlogCard";
 import { blogPosts } from "@/lib/blog-posts";
@@ -137,9 +137,45 @@ export default function HomePage() {
             </p>
           </div>
           <div className="tools-grid">
-            {tools.map((tool) => (
+            {popularConverters.map((tool) => (
               <ToolCard key={tool.slug} tool={tool} />
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="category-home-section">
+        <div className="container">
+          <div className="section-heading centered">
+            <span className="eyebrow">Browse by category</span>
+            <h2>File conversion categories</h2>
+            <p>
+              PDFeed categories are generated from the converter configuration
+              and update automatically as new tools launch.
+            </p>
+          </div>
+          <div className="category-grid">
+            {categoriesWithConverters.map((category) => {
+              const Icon = category.iconComponent;
+              return (
+                <a
+                  className="category-card"
+                  href={`/${category.slug}`}
+                  key={category.id}
+                >
+                  <span className={`category-card-icon accent-${category.accent}`}>
+                    <Icon size={23} />
+                  </span>
+                  <span className="category-card-copy">
+                    <strong>{category.title}</strong>
+                    <small>
+                      {category.availableToolCount} available{" "}
+                      {category.availableToolCount === 1 ? "tool" : "tools"}
+                    </small>
+                  </span>
+                </a>
+              );
+            })}
           </div>
         </div>
       </section>

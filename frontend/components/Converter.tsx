@@ -10,11 +10,13 @@ import {
 } from "lucide-react";
 import { DragEvent, useRef, useState } from "react";
 import { GetQrlyBanner } from "@/components/GetQrlyBanner";
-import type { Tool } from "@/lib/tools";
+import type { Converter } from "@/lib/converters";
 
 type ConverterTool = Pick<
-  Tool,
+  Converter,
   | "slug"
+  | "apiRoute"
+  | "uploadField"
   | "accept"
   | "acceptLabel"
   | "multiple"
@@ -124,10 +126,10 @@ export function Converter({ tool }: { tool: ConverterTool }) {
     try {
       const formData = new FormData();
       for (const file of files) {
-        formData.append(tool.multiple ? "files" : "file", file);
+        formData.append(tool.uploadField, file);
       }
 
-      const response = await fetch(`${apiBaseUrl}/api/convert/${tool.slug}`, {
+      const response = await fetch(`${apiBaseUrl}${tool.apiRoute}`, {
         method: "POST",
         body: formData,
       });

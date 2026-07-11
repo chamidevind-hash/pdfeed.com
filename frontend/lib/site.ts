@@ -15,16 +15,19 @@ export function createPageMetadata({
   title,
   description,
   path,
+  keywords,
 }: {
   title: string;
   description: string;
   path: string;
+  keywords?: string[];
 }): Metadata {
   const url = absoluteUrl(path);
 
   return {
     title,
     description,
+    keywords,
     alternates: { canonical: url },
     openGraph: {
       type: "website",
