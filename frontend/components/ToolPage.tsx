@@ -1,15 +1,23 @@
 import { Clock3, LockKeyhole, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { BetaBanner } from "@/components/BetaBanner";
+import { BlogCard } from "@/components/BlogCard";
 import { Converter } from "@/components/Converter";
+import { PopularToolsSection } from "@/components/PopularToolsSection";
 import { ToolCard } from "@/components/ToolCard";
 import { SITE_NAME, absoluteUrl } from "@/lib/site";
-import { converterMap, type Converter as ConverterDefinition } from "@/lib/converters";
+import type { Converter as ConverterDefinition } from "@/lib/converters";
+import {
+  getRelatedArticlesForConverter,
+  getRelatedConverters,
+} from "@/lib/discovery";
 
 export function ToolPage({ tool }: { tool: ConverterDefinition }) {
   const Icon = tool.icon;
   const pageUrl = absoluteUrl(`/${tool.slug}`);
   const categoryUrl = absoluteUrl(`/${tool.categorySlug}`);
+  const relatedConverters = getRelatedConverters(tool);
+  const relatedArticles = getRelatedArticlesForConverter(tool);
   const structuredData = {
     "@context": "https://schema.org",
     "@graph": [
@@ -132,12 +140,30 @@ export function ToolPage({ tool }: { tool: ConverterDefinition }) {
             <h2>Related tools</h2>
           </div>
           <div className="tools-grid related-grid">
-            {tool.related.map((slug) => (
-              <ToolCard key={slug} tool={converterMap[slug]} />
+            {relatedConverters.map((relatedTool) => (
+              <ToolCard key={relatedTool.slug} tool={relatedTool} />
             ))}
           </div>
         </div>
       </section>
+
+      {relatedArticles.length > 0 && (
+        <section className="related-section related-guides-section">
+          <div className="container">
+            <div className="section-heading">
+              <span className="eyebrow">Helpful guides</span>
+              <h2>Learn more about this workflow</h2>
+            </div>
+            <div className="blog-grid blog-grid-three">
+              {relatedArticles.map((post) => (
+                <BlogCard key={post.slug} post={post} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <PopularToolsSection />
     </main>
   );
 }

@@ -9,11 +9,13 @@ import {
 } from "lucide-react";
 import { BetaBanner } from "@/components/BetaBanner";
 import { GetQrlyBanner } from "@/components/GetQrlyBanner";
-import { ToolCard } from "@/components/ToolCard";
-import { categoriesWithConverters, popularConverters } from "@/lib/converters";
+import { PopularToolsSection } from "@/components/PopularToolsSection";
+import { SearchBox } from "@/components/SearchBox";
+import { categoriesWithConverters } from "@/lib/converters";
 import { SITE_DESCRIPTION, createPageMetadata } from "@/lib/site";
 import { BlogCard } from "@/components/BlogCard";
 import { blogPosts } from "@/lib/blog-posts";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   ...createPageMetadata({
@@ -88,6 +90,9 @@ export default function HomePage() {
           </span>
           <h1>Convert Files Online Free</h1>
           <p>Convert PDF, Word, Excel and Images instantly.</p>
+          <div className="hero-search-row">
+            <SearchBox id="home-hero-search" variant="hero" />
+          </div>
           <a href="#tools" className="button button-primary hero-button">
             Choose a tool
             <MousePointerClick size={18} />
@@ -127,6 +132,14 @@ export default function HomePage() {
         </div>
       </section>
 
+      <PopularToolsSection
+        sectionId="tools"
+        eyebrow="Everything you need"
+        title="Popular file conversion tools"
+        description="Pick a tool, upload your file, and download the result."
+        limit={8}
+      />
+      {/*
       <section className="tools-section" id="tools">
         <div className="container">
           <div className="section-heading centered">
@@ -143,6 +156,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      */}
 
       <section className="category-home-section">
         <div className="container">
@@ -266,4 +281,3 @@ export default function HomePage() {
     </main>
   );
 }
-import type { Metadata } from "next";

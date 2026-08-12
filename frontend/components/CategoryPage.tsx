@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PopularToolsSection } from "@/components/PopularToolsSection";
 import { ToolCard } from "@/components/ToolCard";
 import {
   categoryConfigMap,
@@ -155,6 +156,8 @@ export function CategoryPage({ category }: { category: CategoryPageData }) {
           </div>
         </div>
       </section>
+
+      <PopularToolsSection />
     </main>
   );
 }

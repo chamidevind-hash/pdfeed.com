@@ -41,7 +41,17 @@ export type ConverterSlug =
   | "merge-pdf"
   | "split-pdf"
   | "compress-pdf"
-  | "excel-to-pdf";
+  | "excel-to-pdf"
+  | "png-to-jpg"
+  | "jpg-to-png"
+  | "webp-to-jpg"
+  | "webp-to-png"
+  | "jpg-to-webp"
+  | "png-to-webp"
+  | "compress-image"
+  | "resize-image"
+  | "powerpoint-to-pdf"
+  | "txt-to-pdf";
 
 export type ConverterConfig = {
   id: ConverterSlug;
@@ -68,7 +78,8 @@ export type ConverterConfig = {
   buttonLabel: string;
   apiRoute: `/api/convert/${ConverterSlug}`;
   uploadField: "file" | "files";
-  resultType: "pdf" | "docx" | "jpg" | "zip";
+  resultType: "pdf" | "docx" | "jpg" | "png" | "webp" | "zip";
+  options?: "image-compress" | "image-resize";
   faqs: Array<{ question: string; answer: string }>;
   related?: ConverterSlug[];
 };
@@ -175,10 +186,10 @@ export const categoryConfigs: CategoryConfig[] = [
     title: "PowerPoint Tools",
     shortTitle: "PowerPoint",
     description:
-      "Presentation conversion tools for PowerPoint files are planned for PDFeed.",
+      "Convert PowerPoint presentations into shareable PDF files online.",
     seoTitle: "PowerPoint Tools",
     seoDescription:
-      "Explore upcoming PDFeed PowerPoint tools for converting presentation files online.",
+      "Use PDFeed PowerPoint tools to convert PPT and PPTX presentations to PDF online.",
     keywords: ["PowerPoint tools", "PPT converter", "PPTX to PDF"],
     icon: "pdf",
     accent: "orange",
@@ -190,11 +201,11 @@ export const categoryConfigs: CategoryConfig[] = [
     title: "Image Tools",
     shortTitle: "Image",
     description:
-      "Convert images to PDF and turn PDF pages into image files online.",
+      "Convert, compress, resize, and prepare JPG, PNG, and WebP images online.",
     seoTitle: "Image Tools",
     seoDescription:
-      "Use PDFeed image tools to convert JPG, PNG, and PDF image workflows online for free.",
-    keywords: ["image tools", "JPG to PDF", "PDF to JPG", "PNG to PDF"],
+      "Use PDFeed image tools to convert JPG, PNG, WebP, and PDF image workflows online for free.",
+    keywords: ["image tools", "JPG to PDF", "PDF to JPG", "PNG to JPG", "WebP converter"],
     icon: "images",
     accent: "pink",
     related: ["pdf-tools", "word-tools", "archive-tools"],
@@ -429,6 +440,248 @@ export const converterConfigs: ConverterConfig[] = [
     ],
   },
   {
+    id: "png-to-jpg",
+    title: "PNG to JPG Converter",
+    shortTitle: "PNG to JPG",
+    slug: "png-to-jpg",
+    category: "image-tools",
+    input: ["png"],
+    output: ["jpg"],
+    description: "Convert PNG images to high-quality JPG files online.",
+    seoTitle: "PNG to JPG Converter",
+    seoDescription:
+      "Convert PNG to JPG online with PDFeed. Transparent areas are safely placed on a white background for clean JPG output.",
+    keywords: ["PNG to JPG", "convert PNG to JPG", "PNG converter"],
+    icon: "image",
+    accent: "orange",
+    featured: true,
+    popular: true,
+    available: true,
+    accept: ".png,image/png",
+    acceptLabel: "PNG files",
+    multiple: false,
+    buttonLabel: "Convert to JPG",
+    apiRoute: "/api/convert/png-to-jpg",
+    uploadField: "file",
+    resultType: "jpg",
+    faqs: [
+      sharedFaqs.security,
+      {
+        question: "What happens to transparent PNG areas?",
+        answer:
+          "Transparent areas are flattened onto a white background so the JPG does not render transparency as black.",
+      },
+      sharedFaqs.limit,
+    ],
+  },
+  {
+    id: "jpg-to-png",
+    title: "JPG to PNG Converter",
+    shortTitle: "JPG to PNG",
+    slug: "jpg-to-png",
+    category: "image-tools",
+    input: ["jpg", "jpeg"],
+    output: ["png"],
+    description: "Convert JPG and JPEG images into PNG files online.",
+    seoTitle: "JPG to PNG Converter",
+    seoDescription:
+      "Convert JPG to PNG online for free. Upload a JPEG image and download a PNG file with PDFeed.",
+    keywords: ["JPG to PNG", "JPEG to PNG", "convert JPG to PNG"],
+    icon: "image",
+    accent: "blue",
+    featured: true,
+    popular: false,
+    available: true,
+    accept: ".jpg,.jpeg,image/jpeg",
+    acceptLabel: "JPG or JPEG files",
+    multiple: false,
+    buttonLabel: "Convert to PNG",
+    apiRoute: "/api/convert/jpg-to-png",
+    uploadField: "file",
+    resultType: "png",
+    faqs: [sharedFaqs.security, sharedFaqs.limit],
+  },
+  {
+    id: "webp-to-jpg",
+    title: "WebP to JPG Converter",
+    shortTitle: "WebP to JPG",
+    slug: "webp-to-jpg",
+    category: "image-tools",
+    input: ["webp"],
+    output: ["jpg"],
+    description: "Convert WebP images to widely compatible JPG files.",
+    seoTitle: "WebP to JPG Converter",
+    seoDescription:
+      "Convert WebP to JPG online. Download a compatible JPEG image while preserving orientation and using a white background for transparency.",
+    keywords: ["WebP to JPG", "convert WebP to JPG", "WebP converter"],
+    icon: "image",
+    accent: "pink",
+    featured: true,
+    popular: true,
+    available: true,
+    accept: ".webp,image/webp",
+    acceptLabel: "WebP files",
+    multiple: false,
+    buttonLabel: "Convert to JPG",
+    apiRoute: "/api/convert/webp-to-jpg",
+    uploadField: "file",
+    resultType: "jpg",
+    faqs: [sharedFaqs.security, sharedFaqs.limit],
+  },
+  {
+    id: "webp-to-png",
+    title: "WebP to PNG Converter",
+    shortTitle: "WebP to PNG",
+    slug: "webp-to-png",
+    category: "image-tools",
+    input: ["webp"],
+    output: ["png"],
+    description: "Convert WebP images into PNG files online.",
+    seoTitle: "WebP to PNG Converter",
+    seoDescription:
+      "Convert WebP to PNG online with PDFeed. Upload a WebP image and download a clean PNG file.",
+    keywords: ["WebP to PNG", "convert WebP to PNG", "WebP image converter"],
+    icon: "image",
+    accent: "violet",
+    featured: true,
+    popular: false,
+    available: true,
+    accept: ".webp,image/webp",
+    acceptLabel: "WebP files",
+    multiple: false,
+    buttonLabel: "Convert to PNG",
+    apiRoute: "/api/convert/webp-to-png",
+    uploadField: "file",
+    resultType: "png",
+    faqs: [sharedFaqs.security, sharedFaqs.limit],
+  },
+  {
+    id: "jpg-to-webp",
+    title: "JPG to WebP Converter",
+    shortTitle: "JPG to WebP",
+    slug: "jpg-to-webp",
+    category: "image-tools",
+    input: ["jpg", "jpeg"],
+    output: ["webp"],
+    description: "Convert JPG images to modern WebP files online.",
+    seoTitle: "JPG to WebP Converter",
+    seoDescription:
+      "Convert JPG to WebP online to create modern web-friendly images with good visual quality.",
+    keywords: ["JPG to WebP", "JPEG to WebP", "convert image to WebP"],
+    icon: "image",
+    accent: "green",
+    featured: true,
+    popular: true,
+    available: true,
+    accept: ".jpg,.jpeg,image/jpeg",
+    acceptLabel: "JPG or JPEG files",
+    multiple: false,
+    buttonLabel: "Convert to WebP",
+    apiRoute: "/api/convert/jpg-to-webp",
+    uploadField: "file",
+    resultType: "webp",
+    faqs: [sharedFaqs.security, sharedFaqs.limit],
+  },
+  {
+    id: "png-to-webp",
+    title: "PNG to WebP Converter",
+    shortTitle: "PNG to WebP",
+    slug: "png-to-webp",
+    category: "image-tools",
+    input: ["png"],
+    output: ["webp"],
+    description: "Convert PNG images to efficient WebP files.",
+    seoTitle: "PNG to WebP Converter",
+    seoDescription:
+      "Convert PNG to WebP online with PDFeed. Create compact web-friendly images without installing software.",
+    keywords: ["PNG to WebP", "convert PNG to WebP", "WebP converter"],
+    icon: "image",
+    accent: "emerald",
+    featured: true,
+    popular: false,
+    available: true,
+    accept: ".png,image/png",
+    acceptLabel: "PNG files",
+    multiple: false,
+    buttonLabel: "Convert to WebP",
+    apiRoute: "/api/convert/png-to-webp",
+    uploadField: "file",
+    resultType: "webp",
+    faqs: [sharedFaqs.security, sharedFaqs.limit],
+  },
+  {
+    id: "compress-image",
+    title: "Compress Image Online",
+    shortTitle: "Compress Image",
+    slug: "compress-image",
+    category: "image-tools",
+    input: ["jpg", "jpeg", "png", "webp"],
+    output: ["jpg", "png", "webp"],
+    description: "Reduce image file size while keeping clear visual quality.",
+    seoTitle: "Compress Image Online",
+    seoDescription:
+      "Compress JPG, PNG, and WebP images online. Choose image quality and compare the original and compressed file sizes.",
+    keywords: ["compress image", "image compressor", "reduce image size"],
+    icon: "compress",
+    accent: "cyan",
+    featured: true,
+    popular: true,
+    available: true,
+    accept: ".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp",
+    acceptLabel: "JPG, PNG, or WebP files",
+    multiple: false,
+    buttonLabel: "Compress Image",
+    apiRoute: "/api/convert/compress-image",
+    uploadField: "file",
+    resultType: "jpg",
+    options: "image-compress",
+    faqs: [
+      sharedFaqs.security,
+      {
+        question: "What image quality should I choose?",
+        answer:
+          "The default 80% quality is a good balance for most web and sharing use cases. Use a higher value when fine details matter.",
+      },
+      sharedFaqs.limit,
+    ],
+  },
+  {
+    id: "resize-image",
+    title: "Resize Image Online",
+    shortTitle: "Resize Image",
+    slug: "resize-image",
+    category: "image-tools",
+    input: ["jpg", "jpeg", "png", "webp"],
+    output: ["jpg", "png", "webp"],
+    description: "Resize JPG, PNG, and WebP images by width and height.",
+    seoTitle: "Resize Image Online",
+    seoDescription:
+      "Resize images online with PDFeed. Set width and height, preserve aspect ratio, and avoid unwanted upscaling by default.",
+    keywords: ["resize image", "image resizer", "change image dimensions"],
+    icon: "image",
+    accent: "red",
+    featured: true,
+    popular: true,
+    available: true,
+    accept: ".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp",
+    acceptLabel: "JPG, PNG, or WebP files",
+    multiple: false,
+    buttonLabel: "Resize Image",
+    apiRoute: "/api/convert/resize-image",
+    uploadField: "file",
+    resultType: "jpg",
+    options: "image-resize",
+    faqs: [
+      sharedFaqs.security,
+      {
+        question: "Will PDFeed upscale small images?",
+        answer:
+          "No. Upscaling is disabled by default so small images are not enlarged unless you explicitly allow it.",
+      },
+      sharedFaqs.limit,
+    ],
+  },
+  {
     id: "merge-pdf",
     title: "Merge PDF Files",
     shortTitle: "Merge PDF",
@@ -571,27 +824,96 @@ export const converterConfigs: ConverterConfig[] = [
       sharedFaqs.software,
     ],
   },
+  {
+    id: "powerpoint-to-pdf",
+    title: "PowerPoint to PDF Converter",
+    shortTitle: "PowerPoint to PDF",
+    slug: "powerpoint-to-pdf",
+    category: "powerpoint-tools",
+    input: ["ppt", "pptx"],
+    output: ["pdf"],
+    description: "Convert PPT and PPTX presentations into PDF files.",
+    seoTitle: "PowerPoint to PDF Converter",
+    seoDescription:
+      "Convert PowerPoint presentations to PDF online. Upload PPT or PPTX files and download a shareable PDF with PDFeed.",
+    keywords: ["PowerPoint to PDF", "PPT to PDF", "PPTX to PDF"],
+    icon: "pdf",
+    accent: "orange",
+    featured: true,
+    popular: true,
+    available: true,
+    accept:
+      ".ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    acceptLabel: "PPT or PPTX files",
+    multiple: false,
+    buttonLabel: "Convert to PDF",
+    apiRoute: "/api/convert/powerpoint-to-pdf",
+    uploadField: "file",
+    resultType: "pdf",
+    faqs: [
+      sharedFaqs.security,
+      {
+        question: "Are slide layouts preserved?",
+        answer:
+          "PDFeed uses LibreOffice to export presentations to PDF while preserving slide layout, images, and text as closely as possible.",
+      },
+      sharedFaqs.software,
+    ],
+  },
+  {
+    id: "txt-to-pdf",
+    title: "TXT to PDF Converter",
+    shortTitle: "TXT to PDF",
+    slug: "txt-to-pdf",
+    category: "pdf-tools",
+    input: ["txt"],
+    output: ["pdf"],
+    description: "Convert plain text files into readable PDF documents.",
+    seoTitle: "TXT to PDF Converter",
+    seoDescription:
+      "Convert TXT files to PDF online. Preserve line breaks, support UTF-8 text, and create a readable multipage PDF.",
+    keywords: ["TXT to PDF", "text to PDF", "convert text file to PDF"],
+    icon: "pdf",
+    accent: "blue",
+    featured: true,
+    popular: false,
+    available: true,
+    accept: ".txt,text/plain",
+    acceptLabel: "TXT files",
+    multiple: false,
+    buttonLabel: "Convert to PDF",
+    apiRoute: "/api/convert/txt-to-pdf",
+    uploadField: "file",
+    resultType: "pdf",
+    faqs: [
+      sharedFaqs.security,
+      {
+        question: "Does TXT to PDF preserve line breaks?",
+        answer:
+          "Yes. The converter reads the text file as UTF-8 and keeps line breaks while wrapping long lines across pages.",
+      },
+      sharedFaqs.limit,
+    ],
+  },
 ];
 
 function relatedFor(converter: ConverterConfig): ConverterSlug[] {
   if (converter.related) return converter.related;
 
-  const sameCategory = converterConfigs
-    .filter((item) => item.slug !== converter.slug && item.category === converter.category)
-    .map((item) => item.slug);
-  const matchingOutput = converterConfigs
-    .filter(
-      (item) =>
-        item.slug !== converter.slug &&
-        item.category !== converter.category &&
-        item.output.some((extension) => converter.output.includes(extension)),
-    )
-    .map((item) => item.slug);
-  const fallback = converterConfigs
+  return converterConfigs
     .filter((item) => item.slug !== converter.slug)
-    .map((item) => item.slug);
-
-  return Array.from(new Set([...sameCategory, ...matchingOutput, ...fallback])).slice(0, 3);
+    .map((item) => {
+      let score = 0;
+      if (item.category === converter.category) score += 40;
+      if (item.input.some((extension) => converter.input.includes(extension))) score += 24;
+      if (item.output.some((extension) => converter.output.includes(extension))) score += 20;
+      if (item.featured) score += 8;
+      if (item.popular) score += 6;
+      return { item, score };
+    })
+    .sort((a, b) => b.score - a.score || a.item.shortTitle.localeCompare(b.item.shortTitle))
+    .slice(0, 3)
+    .map(({ item }) => item.slug);
 }
 
 export const converters: Converter[] = converterConfigs.map((converter) => ({
@@ -707,6 +1029,6 @@ export const converterApiRoutes = Object.fromEntries(
     multiple: boolean;
     minimumFiles: number;
     maxFiles: number;
-    resultType: "pdf" | "docx" | "jpg" | "zip";
+    resultType: "pdf" | "docx" | "jpg" | "png" | "webp" | "zip";
   }
 >;

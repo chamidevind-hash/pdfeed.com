@@ -5,7 +5,12 @@ import {
   conversionLimit,
 } from "../middleware/conversion-limit.js";
 import { upload } from "../middleware/upload.js";
-import { imagesToPdf } from "../services/images.js";
+import {
+  compressImage,
+  convertImageFormat,
+  imagesToPdf,
+  resizeImage,
+} from "../services/images.js";
 import { convertOfficeToPdf } from "../services/office.js";
 import { convertPdfToDocx } from "../services/pdf-to-word.js";
 import {
@@ -14,10 +19,11 @@ import {
   pdfToJpg,
   splitPdf,
 } from "../services/pdf.js";
+import { textToPdf } from "../services/text.js";
 import { asyncHandler, AppError } from "../utils/errors.js";
 import { quotaForIp } from "../services/conversion-limit.js";
 import {
-  assertExtension,
+  assertFileType,
   downloadPayload,
   removeFiles,
   safeOriginalName,
@@ -31,6 +37,11 @@ router.get("/quota", (req, res) => {
 
 function extensionForResult(filePath) {
   return path.extname(filePath).toLowerCase();
+}
+
+function normalizeConversionOutput(output) {
+  if (typeof output === "string") return { filePath: output };
+  return output;
 }
 
 function singleFileRoute(
@@ -48,15 +59,22 @@ function singleFileRoute(
       }
 
       try {
-        assertExtension(req.file, expectedExtensions);
-        const output = await converter(req.file.path);
+        assertFileType(req.file, expectedExtensions);
+        const output = normalizeConversionOutput(
+          await converter(req.file.path, req.body || {}),
+        );
         const sourceName = safeOriginalName(req.file.originalname);
         const downloadName =
           typeof resultName === "function"
-            ? resultName(sourceName, output)
+            ? resultName(sourceName, output.filePath)
             : `${sourceName}${resultName}`;
         const quota = commitConversion(req, res);
-        res.json({ ...downloadPayload(output, downloadName), quota });
+        await removeFiles([req.file.path]);
+        res.json({
+          ...downloadPayload(output.filePath, downloadName),
+          ...(output.metadata ? { metadata: output.metadata } : {}),
+          quota,
+        });
       } finally {
         await removeFiles([req.file.path]);
       }
@@ -75,6 +93,18 @@ const singleFileConverters = [
     slug: "excel-to-pdf",
     expectedExtensions: [".xls", ".xlsx"],
     converter: convertOfficeToPdf,
+    resultName: "-converted.pdf",
+  },
+  {
+    slug: "powerpoint-to-pdf",
+    expectedExtensions: [".ppt", ".pptx"],
+    converter: convertOfficeToPdf,
+    resultName: "-converted.pdf",
+  },
+  {
+    slug: "txt-to-pdf",
+    expectedExtensions: [".txt"],
+    converter: textToPdf,
     resultName: "-converted.pdf",
   },
   {
@@ -102,6 +132,54 @@ const singleFileConverters = [
     converter: convertPdfToDocx,
     resultName: "-converted.docx",
   },
+  {
+    slug: "png-to-jpg",
+    expectedExtensions: [".png"],
+    converter: (inputPath) => convertImageFormat(inputPath, "jpg"),
+    resultName: "-converted.jpg",
+  },
+  {
+    slug: "jpg-to-png",
+    expectedExtensions: [".jpg", ".jpeg"],
+    converter: (inputPath) => convertImageFormat(inputPath, "png"),
+    resultName: "-converted.png",
+  },
+  {
+    slug: "webp-to-jpg",
+    expectedExtensions: [".webp"],
+    converter: (inputPath) => convertImageFormat(inputPath, "jpg"),
+    resultName: "-converted.jpg",
+  },
+  {
+    slug: "webp-to-png",
+    expectedExtensions: [".webp"],
+    converter: (inputPath) => convertImageFormat(inputPath, "png"),
+    resultName: "-converted.png",
+  },
+  {
+    slug: "jpg-to-webp",
+    expectedExtensions: [".jpg", ".jpeg"],
+    converter: (inputPath) => convertImageFormat(inputPath, "webp"),
+    resultName: "-converted.webp",
+  },
+  {
+    slug: "png-to-webp",
+    expectedExtensions: [".png"],
+    converter: (inputPath) => convertImageFormat(inputPath, "webp"),
+    resultName: "-converted.webp",
+  },
+  {
+    slug: "compress-image",
+    expectedExtensions: [".jpg", ".jpeg", ".png", ".webp"],
+    converter: compressImage,
+    resultName: (name, output) => `${name}-compressed${extensionForResult(output)}`,
+  },
+  {
+    slug: "resize-image",
+    expectedExtensions: [".jpg", ".jpeg", ".png", ".webp"],
+    converter: resizeImage,
+    resultName: (name, output) => `${name}-resized${extensionForResult(output)}`,
+  },
 ];
 
 function multiFileRoute({
@@ -123,10 +201,11 @@ function multiFileRoute({
 
     try {
       files.forEach((file) =>
-        assertExtension(file, expectedExtensions),
+        assertFileType(file, expectedExtensions),
       );
       const output = await converter(files.map((file) => file.path));
       const quota = commitConversion(req, res);
+      await removeFiles(files.map((file) => file.path));
       res.json({
         ...downloadPayload(output, outputName),
         quota,

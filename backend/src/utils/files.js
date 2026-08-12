@@ -10,10 +10,35 @@ export const allowedExtensions = new Set([
   ".docx",
   ".xls",
   ".xlsx",
+  ".ppt",
+  ".pptx",
+  ".txt",
   ".jpg",
   ".jpeg",
   ".png",
+  ".webp",
 ]);
+
+const reliableMimeTypesByExtension = {
+  ".pdf": ["application/pdf"],
+  ".doc": ["application/msword"],
+  ".docx": [
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ],
+  ".xls": ["application/vnd.ms-excel"],
+  ".xlsx": [
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  ],
+  ".ppt": ["application/vnd.ms-powerpoint"],
+  ".pptx": [
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  ],
+  ".txt": ["text/plain"],
+  ".jpg": ["image/jpeg"],
+  ".jpeg": ["image/jpeg"],
+  ".png": ["image/png"],
+  ".webp": ["image/webp"],
+};
 
 export async function ensureStorageDirectories() {
   await Promise.all([
@@ -44,6 +69,27 @@ export function assertExtension(file, expectedExtensions) {
       `This tool accepts only: ${expectedExtensions.join(", ")}`,
       400,
       "INVALID_FILE_TYPE",
+    );
+  }
+}
+
+export function assertFileType(file, expectedExtensions) {
+  assertExtension(file, expectedExtensions);
+
+  const extension = path.extname(file.originalname).toLowerCase();
+  const expectedMimeTypes = reliableMimeTypesByExtension[extension] || [];
+  const mimeType = String(file.mimetype || "").toLowerCase();
+
+  if (
+    mimeType &&
+    mimeType !== "application/octet-stream" &&
+    expectedMimeTypes.length > 0 &&
+    !expectedMimeTypes.includes(mimeType)
+  ) {
+    throw new AppError(
+      `The uploaded file MIME type does not match ${extension}.`,
+      400,
+      "INVALID_MIME_TYPE",
     );
   }
 }

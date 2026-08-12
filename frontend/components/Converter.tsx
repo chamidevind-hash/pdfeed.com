@@ -23,6 +23,7 @@ type ConverterTool = Pick<
   | "minimumFiles"
   | "buttonLabel"
   | "available"
+  | "options"
 >;
 
 type ConversionResult = {
@@ -31,6 +32,11 @@ type ConversionResult = {
   downloadUrl: string;
   expiresInSeconds: number;
   quota: Quota;
+  metadata?: {
+    originalSize?: number;
+    convertedSize?: number;
+    savedPercent?: number;
+  };
 };
 
 type Quota = {
@@ -60,6 +66,11 @@ export function Converter({ tool }: { tool: ConverterTool }) {
   const [result, setResult] = useState<ConversionResult | null>(null);
   const [error, setError] = useState("");
   const [quota, setQuota] = useState<Quota | null>(null);
+  const [quality, setQuality] = useState(80);
+  const [resizeWidth, setResizeWidth] = useState("");
+  const [resizeHeight, setResizeHeight] = useState("");
+  const [preserveAspectRatio, setPreserveAspectRatio] = useState(true);
+  const [allowUpscale, setAllowUpscale] = useState(false);
 
   async function refreshQuota() {
     try {
@@ -119,6 +130,18 @@ export function Converter({ tool }: { tool: ConverterTool }) {
       return;
     }
 
+    if (tool.options === "image-resize") {
+      const width = Number.parseInt(resizeWidth, 10);
+      const height = Number.parseInt(resizeHeight, 10);
+      const hasValidWidth = Number.isFinite(width) && width > 0;
+      const hasValidHeight = Number.isFinite(height) && height > 0;
+
+      if (!hasValidWidth && !hasValidHeight) {
+        setError("Enter a valid width or height.");
+        return;
+      }
+    }
+
     setIsConverting(true);
     setError("");
     setResult(null);
@@ -127,6 +150,15 @@ export function Converter({ tool }: { tool: ConverterTool }) {
       const formData = new FormData();
       for (const file of files) {
         formData.append(tool.uploadField, file);
+      }
+      if (tool.options === "image-compress") {
+        formData.append("quality", String(quality));
+      }
+      if (tool.options === "image-resize") {
+        if (resizeWidth) formData.append("width", resizeWidth);
+        if (resizeHeight) formData.append("height", resizeHeight);
+        formData.append("preserveAspectRatio", String(preserveAspectRatio));
+        formData.append("allowUpscale", String(allowUpscale));
       }
 
       const response = await fetch(`${apiBaseUrl}${tool.apiRoute}`, {
@@ -214,6 +246,71 @@ export function Converter({ tool }: { tool: ConverterTool }) {
         </div>
       )}
 
+      {tool.options === "image-compress" && files.length > 0 && (
+        <div className="converter-options">
+          <label htmlFor={`${tool.slug}-quality`}>
+            Image quality <strong>{quality}%</strong>
+          </label>
+          <input
+            id={`${tool.slug}-quality`}
+            type="range"
+            min="1"
+            max="100"
+            value={quality}
+            onChange={(event) => setQuality(Number(event.target.value))}
+          />
+          <p>80% is a balanced default for smaller files and clear previews.</p>
+        </div>
+      )}
+
+      {tool.options === "image-resize" && files.length > 0 && (
+        <div className="converter-options resize-options">
+          <div className="dimension-grid">
+            <label htmlFor={`${tool.slug}-width`}>
+              Width
+              <input
+                id={`${tool.slug}-width`}
+                type="number"
+                min="1"
+                inputMode="numeric"
+                placeholder="Auto"
+                value={resizeWidth}
+                onChange={(event) => setResizeWidth(event.target.value)}
+              />
+            </label>
+            <label htmlFor={`${tool.slug}-height`}>
+              Height
+              <input
+                id={`${tool.slug}-height`}
+                type="number"
+                min="1"
+                inputMode="numeric"
+                placeholder="Auto"
+                value={resizeHeight}
+                onChange={(event) => setResizeHeight(event.target.value)}
+              />
+            </label>
+          </div>
+          <label className="checkbox-option">
+            <input
+              type="checkbox"
+              checked={preserveAspectRatio}
+              onChange={(event) => setPreserveAspectRatio(event.target.checked)}
+            />
+            Preserve aspect ratio
+          </label>
+          <label className="checkbox-option">
+            <input
+              type="checkbox"
+              checked={allowUpscale}
+              onChange={(event) => setAllowUpscale(event.target.checked)}
+            />
+            Allow upscaling
+          </label>
+          <p>Upscaling is off by default to avoid enlarging small images.</p>
+        </div>
+      )}
+
       {error && <div className="error-message">{error}</div>}
 
       {quota && files.length > 0 && (
@@ -234,6 +331,16 @@ export function Converter({ tool }: { tool: ConverterTool }) {
             <div>
               <strong>Your file is ready</strong>
               <span>Download it before it is deleted in one hour.</span>
+              {result.metadata?.originalSize !== undefined &&
+                result.metadata.convertedSize !== undefined && (
+                  <span className="result-metadata">
+                    {formatFileSize(result.metadata.originalSize)} -&gt;{" "}
+                    {formatFileSize(result.metadata.convertedSize)}
+                    {result.metadata.savedPercent !== undefined
+                      ? ` (${result.metadata.savedPercent}% saved)`
+                      : ""}
+                  </span>
+                )}
             </div>
             <a
               href={`${apiBaseUrl}${result.downloadUrl}`}

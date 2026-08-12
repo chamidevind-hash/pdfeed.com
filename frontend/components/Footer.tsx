@@ -16,6 +16,16 @@ export function Footer() {
           <Link href="/privacy">Privacy</Link>
           <Link href="/terms">Terms</Link>
         </div>
+        <div className="footer-tools">
+          <h2>Free Tools</h2>
+          <a href="https://getqrly.com/qr-code-generator">
+            Free QR Code Generator
+          </a>
+          <p>
+            Create QR codes for links, WiFi, WhatsApp, Google reviews, business
+            cards, and more.
+          </p>
+        </div>
       </div>
       <div className="container footer-bottom">
         © {new Date().getFullYear()} PDFeed. All rights reserved.

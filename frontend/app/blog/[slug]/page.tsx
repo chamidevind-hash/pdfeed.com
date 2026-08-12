@@ -3,7 +3,9 @@ import { ArrowRight, CalendarDays, Clock3, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BlogCard } from "@/components/BlogCard";
+import { PopularToolsSection } from "@/components/PopularToolsSection";
 import { blogPostMap, blogPosts } from "@/lib/blog-posts";
+import { getRelatedArticlesForPost } from "@/lib/discovery";
 import { SITE_NAME, SITE_URL, SOCIAL_IMAGE_URL, absoluteUrl } from "@/lib/site";
 
 type PageProps = { params: Promise<{ slug: string }> };
@@ -59,7 +61,7 @@ export default async function BlogPostPage({ params }: PageProps) {
   if (!post) notFound();
 
   const url = absoluteUrl(`/blog/${post.slug}`);
-  const related = blogPosts.filter((item) => item.slug !== post.slug).slice(0, 3);
+  const related = getRelatedArticlesForPost(post);
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -179,6 +181,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           </div>
         </div>
       </article>
+      <PopularToolsSection />
     </main>
   );
 }
