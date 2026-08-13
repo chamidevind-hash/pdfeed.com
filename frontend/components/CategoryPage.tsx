@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { PopularToolsSection } from "@/components/PopularToolsSection";
 import { ToolCard } from "@/components/ToolCard";
+import { BlogCard } from "@/components/BlogCard";
+import { blogPostMap } from "@/lib/blog-posts";
+import { categorySeoContent } from "@/lib/category-content";
 import {
   categoryConfigMap,
   popularConverters,
@@ -12,6 +15,11 @@ export function CategoryPage({ category }: { category: CategoryPageData }) {
   const Icon = category.iconComponent;
   const pageUrl = absoluteUrl(`/${category.slug}`);
   const relatedCategories = category.related.map((id) => categoryConfigMap[id]);
+  const seoContent = categorySeoContent[category.slug];
+  const relatedGuides =
+    seoContent?.guideSlugs
+      .map((slug) => blogPostMap[slug])
+      .filter(Boolean) || [];
   const structuredData = {
     "@context": "https://schema.org",
     "@graph": [
@@ -126,6 +134,34 @@ export function CategoryPage({ category }: { category: CategoryPageData }) {
                 <ToolCard key={converter.slug} tool={converter} />
               ))}
             </div>
+          </div>
+        </section>
+      )}
+
+      {seoContent && (
+        <section className="category-seo-section">
+          <div className="container category-seo-grid">
+            <div className="category-seo-card">
+              <span className="eyebrow">Use cases</span>
+              <h2>What {category.title} help you do</h2>
+              <p>{seoContent.summary}</p>
+              <ul>
+                {seoContent.useCases.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            {relatedGuides.length > 0 && (
+              <div className="category-seo-card">
+                <span className="eyebrow">Helpful guides</span>
+                <h2>Learn more</h2>
+                <div className="category-guide-list">
+                  {relatedGuides.map((post) => (
+                    <BlogCard key={post.slug} post={post} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </section>
       )}

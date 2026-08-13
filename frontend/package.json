@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && node ../scripts/prepare-standalone-assets.mjs",
+    "build": "node --max-old-space-size=4096 ../node_modules/next/dist/bin/next build --webpack && node ../scripts/prepare-standalone-assets.mjs",
     "start": "next start",
     "lint": "next lint"
   },

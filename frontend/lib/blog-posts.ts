@@ -1,3 +1,5 @@
+import { seoGrowthBlogPosts } from "@/lib/blog-seo-posts";
+
 export type BlogSection = {
   id: string;
   title: string;
@@ -22,7 +24,7 @@ export type BlogPost = {
   faqs: Array<{ question: string; answer: string }>;
 };
 
-export const blogPosts: BlogPost[] = [
+const coreBlogPosts: BlogPost[] = [
   {
     slug: "how-to-convert-word-to-pdf-online-free",
     title: "How to Convert Word to PDF Online Free",
@@ -425,6 +427,8 @@ export const blogPosts: BlogPost[] = [
     ],
   },
 ];
+
+export const blogPosts: BlogPost[] = [...coreBlogPosts, ...seoGrowthBlogPosts];
 
 export const blogPostMap = Object.fromEntries(
   blogPosts.map((post) => [post.slug, post]),

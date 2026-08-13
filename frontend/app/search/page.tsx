@@ -28,9 +28,7 @@ export async function generateMetadata({
     path: "/search",
   });
 
-  if (!query) {
-    metadata.robots = { index: false, follow: true };
-  }
+  metadata.robots = { index: false, follow: true };
 
   return metadata;
 }

@@ -8,6 +8,7 @@ import { ToolCard } from "@/components/ToolCard";
 import { ToolPageViewTracker } from "@/components/ToolPageViewTracker";
 import { SITE_NAME, absoluteUrl } from "@/lib/site";
 import type { Converter as ConverterDefinition } from "@/lib/converters";
+import { converterSeoContent } from "@/lib/converter-content";
 import {
   getRelatedArticlesForConverter,
   getRelatedConverters,
@@ -19,16 +20,18 @@ export function ToolPage({ tool }: { tool: ConverterDefinition }) {
   const categoryUrl = absoluteUrl(`/${tool.categorySlug}`);
   const relatedConverters = getRelatedConverters(tool);
   const relatedArticles = getRelatedArticlesForConverter(tool);
+  const seoContent = converterSeoContent[tool.slug];
   const structuredData = {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "WebApplication",
+        "@type": "SoftwareApplication",
         name: tool.title,
         url: pageUrl,
         applicationCategory: "UtilitiesApplication",
         operatingSystem: "Web",
         description: tool.seoDescription,
+        isAccessibleForFree: true,
         provider: {
           "@type": "Organization",
           name: SITE_NAME,
@@ -117,6 +120,72 @@ export function ToolPage({ tool }: { tool: ConverterDefinition }) {
           </div>
         </div>
       </section>
+
+      {seoContent && (
+        <section className="tool-seo-section">
+          <div className="container content-container">
+            <div className="tool-seo-intro">
+              <span className="eyebrow">About this converter</span>
+              <h2>Use {tool.shortTitle} with confidence</h2>
+              <p>{seoContent.intro}</p>
+            </div>
+
+            <div className="tool-info-grid">
+              <div className="tool-info-card">
+                <h2>Why use this tool?</h2>
+                <ul>
+                  {seoContent.benefits.map((benefit) => (
+                    <li key={benefit}>{benefit}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="tool-info-card">
+                <h2>Supported formats</h2>
+                <p>{seoContent.formatNotes}</p>
+                <div className="format-pill-row">
+                  <span>Input: {tool.input.map((format) => format.toUpperCase()).join(", ")}</span>
+                  <span>Output: {tool.output.map((format) => format.toUpperCase()).join(", ")}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="tool-steps-card">
+              <span className="eyebrow">How it works</span>
+              <h2>How to use {tool.shortTitle}</h2>
+              <ol>
+                {seoContent.howToSteps.map((step) => (
+                  <li key={step.title}>
+                    <strong>{step.title}</strong>
+                    <p>{step.text}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <div className="tool-info-grid">
+              <div className="tool-info-card">
+                <h2>Tips for better results</h2>
+                <ul>
+                  {seoContent.tips.map((tip) => (
+                    <li key={tip}>{tip}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="tool-info-card">
+                <h2>Useful next steps</h2>
+                <div className="contextual-link-list">
+                  {seoContent.contextualLinks.map((item) => (
+                    <Link href={item.href} key={item.href}>
+                      <strong>{item.label}</strong>
+                      <span>{item.text}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="content-section">
         <div className="container content-container">

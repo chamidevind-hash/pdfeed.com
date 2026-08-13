@@ -301,7 +301,7 @@ export const converterConfigs: ConverterConfig[] = [
     input: ["pdf"],
     output: ["docx"],
     description: "Turn PDF documents into editable DOCX files online.",
-    seoTitle: "PDF to Word Converter",
+    seoTitle: "PDF to Word Converter - Convert PDF to DOCX Online",
     seoDescription:
       "Convert PDF to Word online and download an editable DOCX. Preserve text, images, tables, and layout with secure automatic file deletion.",
     keywords: ["PDF to Word", "convert PDF to Word", "PDF to DOCX"],
@@ -334,17 +334,24 @@ export const converterConfigs: ConverterConfig[] = [
   },
   {
     id: "word-to-pdf",
-    title: "Word to PDF Converter",
+    title: "Convert Word to PDF Online",
     shortTitle: "Word to PDF",
     slug: "word-to-pdf",
     category: "word-tools",
     input: ["doc", "docx"],
     output: ["pdf"],
     description: "Convert DOC and DOCX documents into polished PDF files.",
-    seoTitle: "Word to PDF Converter",
+    seoTitle: "Word to PDF Converter - Convert DOCX to PDF Free",
     seoDescription:
-      "Convert Word to PDF online for free. Upload a DOC or DOCX file and download a clean PDF without registration.",
-    keywords: ["Word to PDF", "DOCX to PDF", "convert Word to PDF online"],
+      "Convert Word to PDF online for free. Upload DOC or DOCX files, create a shareable PDF, and download it without installing software.",
+    keywords: [
+      "Word to PDF",
+      "convert Word to PDF",
+      "DOCX to PDF",
+      "DOC to PDF",
+      "Word document to PDF",
+      "convert Word to PDF online",
+    ],
     icon: "word",
     accent: "blue",
     featured: true,
@@ -377,7 +384,7 @@ export const converterConfigs: ConverterConfig[] = [
     input: ["jpg", "jpeg", "png"],
     output: ["pdf"],
     description: "Combine JPG and PNG images into one easy-to-share PDF.",
-    seoTitle: "JPG to PDF Converter",
+    seoTitle: "JPG to PDF Converter - Combine Images Into PDF",
     seoDescription:
       "Convert JPG and PNG images to PDF online. Add multiple images and combine them into one PDF in seconds.",
     keywords: ["JPG to PDF", "PNG to PDF", "image to PDF"],
@@ -448,7 +455,7 @@ export const converterConfigs: ConverterConfig[] = [
     input: ["png"],
     output: ["jpg"],
     description: "Convert PNG images to high-quality JPG files online.",
-    seoTitle: "PNG to JPG Converter",
+    seoTitle: "PNG to JPG Converter - Convert PNG Images Online",
     seoDescription:
       "Convert PNG to JPG online with PDFeed. Transparent areas are safely placed on a white background for clean JPG output.",
     keywords: ["PNG to JPG", "convert PNG to JPG", "PNG converter"],
@@ -537,7 +544,7 @@ export const converterConfigs: ConverterConfig[] = [
     input: ["webp"],
     output: ["png"],
     description: "Convert WebP images into PNG files online.",
-    seoTitle: "WebP to PNG Converter",
+    seoTitle: "WebP to PNG Converter - Convert WebP Images Online",
     seoDescription:
       "Convert WebP to PNG online with PDFeed. Upload a WebP image and download a clean PNG file.",
     keywords: ["WebP to PNG", "convert WebP to PNG", "WebP image converter"],
@@ -618,7 +625,7 @@ export const converterConfigs: ConverterConfig[] = [
     input: ["jpg", "jpeg", "png", "webp"],
     output: ["jpg", "png", "webp"],
     description: "Reduce image file size while keeping clear visual quality.",
-    seoTitle: "Compress Image Online",
+    seoTitle: "Compress Image Online - Reduce JPG, PNG, and WebP Size",
     seoDescription:
       "Compress JPG, PNG, and WebP images online. Choose image quality and compare the original and compressed file sizes.",
     keywords: ["compress image", "image compressor", "reduce image size"],
@@ -654,7 +661,7 @@ export const converterConfigs: ConverterConfig[] = [
     input: ["jpg", "jpeg", "png", "webp"],
     output: ["jpg", "png", "webp"],
     description: "Resize JPG, PNG, and WebP images by width and height.",
-    seoTitle: "Resize Image Online",
+    seoTitle: "Resize Image Online - Change Image Dimensions",
     seoDescription:
       "Resize images online with PDFeed. Set width and height, preserve aspect ratio, and avoid unwanted upscaling by default.",
     keywords: ["resize image", "image resizer", "change image dimensions"],
@@ -690,7 +697,7 @@ export const converterConfigs: ConverterConfig[] = [
     input: ["pdf"],
     output: ["pdf"],
     description: "Combine two or more PDF documents into a single file.",
-    seoTitle: "Merge PDF Files",
+    seoTitle: "Merge PDF Files Online - Combine PDFs Free",
     seoDescription:
       "Merge PDF files online for free. Select multiple PDFs and combine every page into one secure downloadable document.",
     keywords: ["merge PDF", "combine PDF", "merge PDF files online"],
@@ -762,7 +769,7 @@ export const converterConfigs: ConverterConfig[] = [
     input: ["pdf"],
     output: ["pdf"],
     description: "Reduce PDF file size for easier sharing and storage.",
-    seoTitle: "Compress PDF Online",
+    seoTitle: "Compress PDF Online - Reduce PDF File Size",
     seoDescription:
       "Compress PDF files online to reduce their size while keeping good visual quality. Fast, secure, and no sign-up required.",
     keywords: ["compress PDF", "reduce PDF size", "PDF compressor"],
@@ -833,7 +840,7 @@ export const converterConfigs: ConverterConfig[] = [
     input: ["ppt", "pptx"],
     output: ["pdf"],
     description: "Convert PPT and PPTX presentations into PDF files.",
-    seoTitle: "PowerPoint to PDF Converter",
+    seoTitle: "PowerPoint to PDF Converter - Convert PPTX to PDF",
     seoDescription:
       "Convert PowerPoint presentations to PDF online. Upload PPT or PPTX files and download a shareable PDF with PDFeed.",
     keywords: ["PowerPoint to PDF", "PPT to PDF", "PPTX to PDF"],

@@ -21,6 +21,11 @@ function getCtaTitle(toolLabel: string) {
     "Merge PDF Files": "Merge your PDF files now",
     "Convert JPG to PDF": "Convert your JPG to PDF now",
     "Convert Excel to PDF": "Convert your Excel file to PDF now",
+    "Convert PDF to Word": "Convert your PDF to Word now",
+    "Convert PNG to JPG": "Convert your PNG to JPG now",
+    "Convert WebP to PNG": "Convert your WebP to PNG now",
+    "Compress Image": "Compress your image now",
+    "Convert PowerPoint to PDF": "Convert your PowerPoint to PDF now",
   };
 
   return titles[toolLabel] ?? "Convert your file now";
