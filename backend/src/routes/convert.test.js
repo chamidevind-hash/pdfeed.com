@@ -1,10 +1,15 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { after, before, beforeEach, describe, it } from "node:test";
 import sharp from "sharp";
 import { convertedDir, uploadsDir } from "../config.js";
 
 process.env.DAILY_CONVERSION_LIMIT = "100";
+
+const analyticsTempDir = await fs.mkdtemp(path.join(os.tmpdir(), "pdfeed-convert-analytics-test-"));
+process.env.ANALYTICS_DB_PATH = path.join(analyticsTempDir, "analytics.db");
 
 let server;
 let baseUrl;
@@ -55,7 +60,10 @@ describe("image conversion routes", () => {
 
   after(async () => {
     await new Promise((resolve) => server.close(resolve));
+    const { closeAnalytics } = await import("../services/analytics.js");
+    closeAnalytics();
     await cleanTempStorage();
+    await fs.rm(analyticsTempDir, { recursive: true, force: true });
   });
 
   it("rejects an empty upload", async () => {
@@ -148,5 +156,33 @@ describe("image conversion routes", () => {
     assert.equal(typeof body.metadata.originalSize, "number");
     assert.equal(typeof body.metadata.convertedSize, "number");
     assert.equal(typeof body.metadata.savedPercent, "number");
+  });
+
+  it("does not fail a successful conversion when analytics storage is unavailable", async () => {
+    const { closeAnalytics } = await import("../services/analytics.js");
+    closeAnalytics();
+    const blockedPath = path.join(analyticsTempDir, "blocked-directory");
+    await fs.mkdir(blockedPath, { recursive: true });
+    process.env.ANALYTICS_DB_PATH = blockedPath;
+
+    const png = await sharp({
+      create: {
+        width: 10,
+        height: 10,
+        channels: 4,
+        background: { r: 255, g: 255, b: 255, alpha: 1 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    const { response, body } = await uploadFile(
+      "/api/convert/png-to-jpg",
+      "analytics-down.png",
+      png,
+    );
+
+    assert.equal(response.status, 200);
+    assert.match(body.downloadUrl, /^\/api\/download\//);
   });
 });

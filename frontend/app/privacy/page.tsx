@@ -49,6 +49,14 @@ export default function PrivacyPage() {
           process usage data and use cookies or similar technologies according
           to their own privacy policies.
         </p>
+        <p>
+          PDFeed also keeps lightweight anonymous operational analytics for
+          conversion reliability, including the conversion tool used, event
+          type, timestamp, file size, processing duration, normalized error
+          code, and tool page views. These operational analytics do not store
+          filenames, file paths, uploaded file contents, IP addresses, user
+          agents, cookies, user IDs, or device fingerprints.
+        </p>
 
         <h2>Cookies</h2>
         <p>

@@ -1,5 +1,6 @@
 import express from "express";
 import path from "node:path";
+import { performance } from "node:perf_hooks";
 import {
   commitConversion,
   conversionLimit,
@@ -11,6 +12,10 @@ import {
   imagesToPdf,
   resizeImage,
 } from "../services/images.js";
+import {
+  normalizeAnalyticsErrorCode,
+  recordAnalyticsEvent,
+} from "../services/analytics.js";
 import { convertOfficeToPdf } from "../services/office.js";
 import { convertPdfToDocx } from "../services/pdf-to-word.js";
 import {
@@ -44,7 +49,12 @@ function normalizeConversionOutput(output) {
   return output;
 }
 
+function durationSince(startedAt) {
+  return Math.round(performance.now() - startedAt);
+}
+
 function singleFileRoute(
+  slug,
   fieldName,
   expectedExtensions,
   converter,
@@ -54,12 +64,20 @@ function singleFileRoute(
     conversionLimit,
     upload.single(fieldName),
     asyncHandler(async (req, res) => {
-      if (!req.file) {
-        throw new AppError("Please select a file to upload.", 400, "FILE_REQUIRED");
-      }
+      const startedAt = performance.now();
+      const fileSizeBytes = req.file?.size;
 
       try {
+        if (!req.file) {
+          throw new AppError("Please select a file to upload.", 400, "FILE_REQUIRED");
+        }
+
         assertFileType(req.file, expectedExtensions);
+        recordAnalyticsEvent({
+          eventType: "conversion_started",
+          toolSlug: slug,
+          fileSizeBytes,
+        });
         const output = normalizeConversionOutput(
           await converter(req.file.path, req.body || {}),
         );
@@ -70,13 +88,29 @@ function singleFileRoute(
             : `${sourceName}${resultName}`;
         const quota = commitConversion(req, res);
         await removeFiles([req.file.path]);
+        recordAnalyticsEvent({
+          eventType: "conversion_success",
+          toolSlug: slug,
+          fileSizeBytes,
+          durationMs: durationSince(startedAt),
+        });
         res.json({
           ...downloadPayload(output.filePath, downloadName),
           ...(output.metadata ? { metadata: output.metadata } : {}),
           quota,
         });
+      } catch (error) {
+        recordAnalyticsEvent({
+          eventType: "conversion_failed",
+          toolSlug: slug,
+          fileSizeBytes,
+          durationMs: durationSince(startedAt),
+          errorCode: normalizeAnalyticsErrorCode(error),
+        });
+        error.analyticsRecorded = true;
+        throw error;
       } finally {
-        await removeFiles([req.file.path]);
+        await removeFiles([req.file?.path]);
       }
     }),
   ];
@@ -183,6 +217,7 @@ const singleFileConverters = [
 ];
 
 function multiFileRoute({
+  slug,
   expectedExtensions,
   minimumFiles,
   requiredMessage,
@@ -194,25 +229,52 @@ function multiFileRoute({
     conversionLimit,
     upload.array("files", 20),
     asyncHandler(async (req, res) => {
-    const files = req.files || [];
-    if (files.length < minimumFiles) {
-      throw new AppError(requiredMessage, 400, requiredCode);
-    }
-
-    try {
-      files.forEach((file) =>
-        assertFileType(file, expectedExtensions),
+      const startedAt = performance.now();
+      const files = req.files || [];
+      const fileSizeBytes = files.reduce(
+        (total, file) => total + (file.size || 0),
+        0,
       );
-      const output = await converter(files.map((file) => file.path));
-      const quota = commitConversion(req, res);
-      await removeFiles(files.map((file) => file.path));
-      res.json({
-        ...downloadPayload(output, outputName),
-        quota,
-      });
-    } finally {
-      await removeFiles(files.map((file) => file.path));
-    }
+
+      try {
+        if (files.length < minimumFiles) {
+          throw new AppError(requiredMessage, 400, requiredCode);
+        }
+
+        files.forEach((file) =>
+          assertFileType(file, expectedExtensions),
+        );
+        recordAnalyticsEvent({
+          eventType: "conversion_started",
+          toolSlug: slug,
+          fileSizeBytes,
+        });
+        const output = await converter(files.map((file) => file.path));
+        const quota = commitConversion(req, res);
+        await removeFiles(files.map((file) => file.path));
+        recordAnalyticsEvent({
+          eventType: "conversion_success",
+          toolSlug: slug,
+          fileSizeBytes,
+          durationMs: durationSince(startedAt),
+        });
+        res.json({
+          ...downloadPayload(output, outputName),
+          quota,
+        });
+      } catch (error) {
+        recordAnalyticsEvent({
+          eventType: "conversion_failed",
+          toolSlug: slug,
+          fileSizeBytes,
+          durationMs: durationSince(startedAt),
+          errorCode: normalizeAnalyticsErrorCode(error),
+        });
+        error.analyticsRecorded = true;
+        throw error;
+      } finally {
+        await removeFiles(files.map((file) => file.path));
+      }
     }),
   ];
 }
@@ -242,6 +304,7 @@ for (const converter of singleFileConverters) {
   router.post(
     `/${converter.slug}`,
     ...singleFileRoute(
+      converter.slug,
       "file",
       converter.expectedExtensions,
       converter.converter,

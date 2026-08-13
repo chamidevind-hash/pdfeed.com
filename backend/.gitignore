@@ -1,6 +1,8 @@
 node_modules/
 uploads/*
 converted/*
+data/*.db
+data/*.db-*
 !uploads/.gitkeep
 !converted/.gitkeep
 .env

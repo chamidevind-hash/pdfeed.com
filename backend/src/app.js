@@ -3,11 +3,24 @@ import express from "express";
 import helmet from "helmet";
 import multer from "multer";
 import { config } from "./config.js";
+import analyticsRoutes, { adminRouter as analyticsAdminRoutes } from "./routes/analytics.js";
 import convertRoutes from "./routes/convert.js";
 import downloadRoutes from "./routes/download.js";
+import {
+  initializeAnalytics,
+  normalizeAnalyticsErrorCode,
+  recordAnalyticsEvent,
+} from "./services/analytics.js";
 import { AppError } from "./utils/errors.js";
+import { isValidConverterSlug } from "./utils/converters.js";
 
 export const app = express();
+
+try {
+  initializeAnalytics();
+} catch (error) {
+  console.error("Analytics initialization failed:", error.message);
+}
 
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
@@ -25,6 +38,8 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.use("/api/convert", convertRoutes);
+app.use("/api/analytics", analyticsRoutes);
+app.use("/api/admin/analytics", analyticsAdminRoutes);
 app.use("/api/download", downloadRoutes);
 
 app.use((_req, _res, next) => {
@@ -32,6 +47,15 @@ app.use((_req, _res, next) => {
 });
 
 app.use((error, _req, res, _next) => {
+  const convertMatch = _req.path.match(/^\/api\/convert\/([a-z0-9-]+)/);
+  if (!error.analyticsRecorded && convertMatch && isValidConverterSlug(convertMatch[1])) {
+    recordAnalyticsEvent({
+      eventType: "conversion_failed",
+      toolSlug: convertMatch[1],
+      errorCode: normalizeAnalyticsErrorCode(error),
+    });
+  }
+
   if (error instanceof multer.MulterError) {
     const message =
       error.code === "LIMIT_FILE_SIZE"

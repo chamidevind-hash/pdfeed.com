@@ -7,6 +7,7 @@ const srcDir = path.dirname(currentFile);
 export const backendDir = path.resolve(srcDir, "..");
 export const uploadsDir = path.join(backendDir, "uploads");
 export const convertedDir = path.join(backendDir, "converted");
+export const dataDir = path.join(backendDir, "data");
 
 export const config = {
   port: Number(process.env.PORT || 4000),
@@ -29,4 +30,8 @@ export const config = {
   convertApiBaseUrl:
     process.env.CONVERTAPI_BASE_URL ||
     "https://v2.convertapi.com/convert/pdf/to/docx",
+  analyticsDbPath:
+    process.env.ANALYTICS_DB_PATH || path.join(dataDir, "analytics.db"),
+  analyticsRetentionDays: Number(process.env.ANALYTICS_RETENTION_DAYS || 365),
+  analyticsAdminToken: process.env.ANALYTICS_ADMIN_TOKEN || "",
 };

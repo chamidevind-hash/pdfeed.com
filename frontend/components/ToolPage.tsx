@@ -5,6 +5,7 @@ import { BlogCard } from "@/components/BlogCard";
 import { Converter } from "@/components/Converter";
 import { PopularToolsSection } from "@/components/PopularToolsSection";
 import { ToolCard } from "@/components/ToolCard";
+import { ToolPageViewTracker } from "@/components/ToolPageViewTracker";
 import { SITE_NAME, absoluteUrl } from "@/lib/site";
 import type { Converter as ConverterDefinition } from "@/lib/converters";
 import {
@@ -62,6 +63,7 @@ export function ToolPage({ tool }: { tool: ConverterDefinition }) {
 
   return (
     <main>
+      <ToolPageViewTracker toolSlug={tool.slug} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
