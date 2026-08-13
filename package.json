@@ -16,12 +16,9 @@
     "check": "npm run check --workspace backend && npm run test --workspace backend && npm run build --workspace frontend"
   },
   "devDependencies": {
-    "concurrently": "^10.0.3"
+    "concurrently": "^10.0.4"
   },
   "overrides": {
-    "next@16.2.9": {
-      "postcss": "8.5.15"
-    },
-    "shell-quote": "^1.8.4"
+    "shell-quote": "^1.10.0"
   }
 }
