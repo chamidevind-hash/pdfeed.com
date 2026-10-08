@@ -7,8 +7,21 @@ import {
   type ConverterSlug,
 } from "@/lib/converters";
 
+const popularConverterPriority: ConverterSlug[] = [
+  "word-to-pdf",
+  "compress-pdf",
+];
+
 export function getPopularConverters(limit = 6) {
-  return popularConverters.slice(0, limit);
+  const priority = popularConverterPriority
+    .map((slug) => converterMap[slug])
+    .filter((converter) => converter?.popular);
+
+  const remaining = popularConverters.filter(
+    (converter) => !popularConverterPriority.includes(converter.slug),
+  );
+
+  return [...priority, ...remaining].slice(0, limit);
 }
 
 export function getRelatedConverters(tool: Converter, limit = 3) {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Fragment } from "react";
 import { ArrowRight, CalendarDays, Clock3, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -9,6 +10,18 @@ import { getRelatedArticlesForPost } from "@/lib/discovery";
 import { SITE_NAME, SITE_URL, SOCIAL_IMAGE_URL, absoluteUrl } from "@/lib/site";
 
 type PageProps = { params: Promise<{ slug: string }> };
+
+const contextualToolLinkPosts = new Set([
+  "how-to-convert-word-to-pdf-online-free",
+  "how-to-convert-word-to-pdf-without-losing-formatting",
+  "how-to-convert-word-to-pdf-on-iphone",
+  "how-to-convert-word-to-pdf-on-android",
+  "how-to-compress-pdf-without-losing-quality",
+  "how-to-compress-pdf-for-email",
+  "how-to-merge-pdf-files-online",
+  "how-to-merge-pdf-files-into-one-document",
+  "how-to-reduce-image-file-size",
+]);
 
 export function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }));
@@ -124,25 +137,34 @@ export default async function BlogPostPage({ params }: PageProps) {
           </nav>
 
           <div className="article-content">
-            {post.sections.map((section) => (
-              <section id={section.id} key={section.id}>
-                <h2>{section.title}</h2>
-                {section.paragraphs?.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-                {section.steps && (
-                  <ol className="article-steps">
-                    {section.steps.map((step) => (
-                      <li key={step.title}>
-                        <div><strong>{step.title}</strong><p>{step.text}</p></div>
-                      </li>
-                    ))}
-                  </ol>
+            {post.sections.map((section, index) => (
+              <Fragment key={section.id}>
+                <section id={section.id}>
+                  <h2>{section.title}</h2>
+                  {section.paragraphs?.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                  {section.steps && (
+                    <ol className="article-steps">
+                      {section.steps.map((step) => (
+                        <li key={step.title}>
+                          <div><strong>{step.title}</strong><p>{step.text}</p></div>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                  {section.bullets && (
+                    <ul className="article-bullets">
+                      {section.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}
+                    </ul>
+                  )}
+                </section>
+                {index === 0 && contextualToolLinkPosts.has(post.slug) && (
+                  <p className="article-inline-tool-link">
+                    Ready to work on the file?{" "}
+                    <Link href={post.toolPath}>{post.toolLabel}</Link> with PDFeed,
+                    then use the guidance below to review the result.
+                  </p>
                 )}
-                {section.bullets && (
-                  <ul className="article-bullets">
-                    {section.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}
-                  </ul>
-                )}
-              </section>
+              </Fragment>
             ))}
 
             <aside className="article-safety-note">

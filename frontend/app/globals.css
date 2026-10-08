@@ -906,6 +906,23 @@ main {
   color: var(--blue);
   font-weight: 700;
 }
+
+.article-content .article-inline-tool-link {
+  margin: 30px 0 42px;
+  padding: 16px 18px;
+  border: 1px solid #bfdbfe;
+  border-left: 4px solid var(--blue);
+  border-radius: 14px;
+  background: var(--blue-soft);
+  color: #334155;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.article-content .article-inline-tool-link a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .article-steps { margin: 32px 0 40px; padding: 0; list-style: none; counter-reset: steps; }
 .article-steps li { counter-increment: steps; padding: 0 0 28px 58px; position: relative; border-left: 2px solid #dbeafe; }
 .article-steps li:last-child { padding-bottom: 0; border-left-color: transparent; }
@@ -1968,7 +1985,7 @@ main {
   padding-top: 55px;
   padding-bottom: 35px;
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) auto minmax(230px, 300px);
+  grid-template-columns: minmax(220px, 1fr) auto minmax(170px, 210px) minmax(230px, 300px);
   gap: 34px;
   align-items: flex-start;
 }
@@ -2000,6 +2017,7 @@ main {
   color: white;
 }
 
+.footer-popular h2,
 .footer-tools h2 {
   margin: 0 0 12px;
   color: white;
@@ -2007,12 +2025,19 @@ main {
   letter-spacing: -0.01em;
 }
 
+.footer-popular-links {
+  display: grid;
+  gap: 8px;
+}
+
+.footer-popular a,
 .footer-tools a {
   color: #bfdbfe;
   font-size: 13px;
   font-weight: 750;
 }
 
+.footer-popular a:hover,
 .footer-tools a:hover {
   color: white;
 }
@@ -2432,6 +2457,10 @@ main {
 }
 
 @media (max-width: 850px) {
+  .footer-inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .header-search,
   .header-nav {
     display: none;
