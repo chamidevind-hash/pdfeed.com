@@ -165,8 +165,8 @@ export default function HomePage() {
             <span className="eyebrow">Browse by category</span>
             <h2>File conversion categories</h2>
             <p>
-              PDFeed categories are generated from the converter configuration
-              and update automatically as new tools launch.
+              Find the right converter by file type: PDF, Word, Excel,
+              PowerPoint, and image tools.
             </p>
           </div>
           <div className="category-grid">

@@ -12,6 +12,17 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname, ".."),
   },
+  // One canonical host: www.pdfeed.com -> pdfeed.com, so Google sees one copy of each page.
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.pdfeed.com" }],
+        destination: "https://pdfeed.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

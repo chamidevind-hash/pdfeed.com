@@ -7,14 +7,19 @@ import { categorySeoContent } from "@/lib/category-content";
 import {
   categoryConfigMap,
   popularConverters,
+  publishedCategoryConfigs,
   type CategoryPageData,
 } from "@/lib/converters";
+
+const publishedCategoryIds = new Set(publishedCategoryConfigs.map((category) => category.id));
 import { SITE_NAME, absoluteUrl } from "@/lib/site";
 
 export function CategoryPage({ category }: { category: CategoryPageData }) {
   const Icon = category.iconComponent;
   const pageUrl = absoluteUrl(`/${category.slug}`);
-  const relatedCategories = category.related.map((id) => categoryConfigMap[id]);
+  const relatedCategories = category.related
+    .map((id) => categoryConfigMap[id])
+    .filter((related) => publishedCategoryIds.has(related.id));
   const seoContent = categorySeoContent[category.slug];
   const relatedGuides =
     seoContent?.guideSlugs

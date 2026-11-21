@@ -19,11 +19,11 @@ export function GetQrlyBanner({
       </div>
       <a
         className="button getqrly-button"
-        href="https://getqrly.com"
+        href="https://getqrly.com/qr-code-generator"
         target="_blank"
         rel="noopener noreferrer"
       >
-        Try GetQRly
+        Free QR Code Generator
         <ArrowUpRight size={18} />
       </a>
     </aside>

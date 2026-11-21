@@ -939,9 +939,19 @@ export const popularConverters = converters.filter((converter) => converter.popu
 
 export const featuredConverters = converters.filter((converter) => converter.featured);
 
-export const converterCategories = categoryConfigs;
+// Only categories that contain at least one working tool are published. Empty
+// "coming soon" categories stay out of the sitemap, navigation and search, and
+// their URLs return 404, so Google never sees thin placeholder pages.
+const hasAvailableConverter = (categoryId: ConverterCategoryId) =>
+  converters.some((converter) => converter.category === categoryId && converter.available);
 
-export const categorySlugs = categoryConfigs.map((category) => ({
+export const publishedCategoryConfigs = categoryConfigs.filter((category) =>
+  hasAvailableConverter(category.id),
+);
+
+export const converterCategories = publishedCategoryConfigs;
+
+export const categorySlugs = publishedCategoryConfigs.map((category) => ({
   category: category.id,
   slug: category.slug,
 }));
@@ -966,7 +976,7 @@ export const featuredConvertersByCategory = Object.fromEntries(
   ]),
 ) as Record<ConverterCategoryId, Converter[]>;
 
-export const categoriesWithConverters = categoryConfigs.map((category) => ({
+export const categoriesWithConverters = publishedCategoryConfigs.map((category) => ({
   ...category,
   iconComponent: converterIconMap[category.icon],
   converters: convertersByCategory[category.id],
